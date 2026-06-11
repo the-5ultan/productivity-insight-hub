@@ -11,6 +11,14 @@ const Report = sequelize.define('Report', {
     type: DataTypes.INTEGER,
     allowNull: true
   },
+  analysis_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  dataset_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
   report_path: {
     type: DataTypes.STRING,
     allowNull: false

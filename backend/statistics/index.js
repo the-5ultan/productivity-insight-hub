@@ -94,17 +94,37 @@ class StatisticsEngine {
     return { m, b };
   }
 
+  generatePrediction(xValue, m, b) {
+    return (m * xValue) + b;
+  }
+
   // AI Interpretation Engine
-  generateInterpretation(metric, value) {
+  generateInterpretation(metric, value, labels = {}) {
     if (metric === 'correlation') {
-      if (value > 0.7) return "Strong positive relationship. As one variable increases, the other tends to increase significantly.";
-      if (value > 0.3) return "Moderate positive relationship.";
-      if (value > -0.3) return "Weak or no relationship.";
-      if (value > -0.7) return "Moderate negative relationship.";
-      return "Strong negative relationship. As one variable increases, the other tends to decrease significantly.";
+      const { var1 = 'variable A', var2 = 'variable B' } = labels;
+      let impact = "";
+      if (Math.abs(value) > 0.7) impact = "Strong";
+      else if (Math.abs(value) > 0.3) impact = "Moderate";
+      else impact = "Weak";
+
+      const direction = value > 0 ? "positive" : "negative";
+      
+      let insight = `${impact} ${direction} correlation detected between ${var1} and ${var2}.`;
+      
+      if (value < -0.5 && var1.toLowerCase().includes('social') && var2.toLowerCase().includes('productivity')) {
+        insight += " Students spending more time on social media tend to achieve lower productivity scores.";
+      } else if (value > 0.5 && var1.toLowerCase().includes('study') && var2.toLowerCase().includes('productivity')) {
+        insight += " Increased study time is strongly associated with higher productivity outcomes.";
+      }
+
+      return insight;
     }
-    // Add more interpretations as needed
-    return "";
+    
+    if (metric === 'probability') {
+      return `There is a ${(value * 100).toFixed(1)}% probability of this outcome based on the historical dataset.`;
+    }
+
+    return "Insufficient data for detailed interpretation.";
   }
 }
 

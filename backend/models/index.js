@@ -22,6 +22,12 @@ Analysis.belongsTo(Dataset, { foreignKey: 'dataset_id' });
 User.hasMany(Report, { foreignKey: 'user_id' });
 Report.belongsTo(User, { foreignKey: 'user_id' });
 
+Analysis.hasOne(Report, { foreignKey: 'analysis_id' });
+Report.belongsTo(Analysis, { foreignKey: 'analysis_id' });
+
+Dataset.hasMany(Report, { foreignKey: 'dataset_id' });
+Report.belongsTo(Dataset, { foreignKey: 'dataset_id' });
+
 User.hasMany(ActivityLog, { foreignKey: 'user_id' });
 ActivityLog.belongsTo(User, { foreignKey: 'user_id' });
 
