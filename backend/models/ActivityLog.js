@@ -7,7 +7,7 @@ const ActivityLog = sequelize.define('ActivityLog', {
     primaryKey: true,
     autoIncrement: true
   },
-  user_id: {
+  userId: {
     type: DataTypes.INTEGER,
     allowNull: true
   },
@@ -15,14 +15,16 @@ const ActivityLog = sequelize.define('ActivityLog', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  details: {
+  description: {
     type: DataTypes.TEXT,
+    allowNull: true
+  },
+  ipAddress: {
+    type: DataTypes.STRING,
     allowNull: true
   }
 }, {
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: false
+  timestamps: true
 });
 
 module.exports = ActivityLog;
