@@ -1,16 +1,52 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import BlurText from '../components/BlurText';
-import FadingVideo from '../components/FadingVideo';
+import AnimatedBackground from '../components/AnimatedBackground';
 import { BarChart3, Network, Brain } from 'lucide-react';
 
-const LandingPage = () => {
-  const videoSources = [
-    'https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-world-map-with-data-points-23214-large.mp4',
-    'https://assets.mixkit.co/videos/preview/mixkit-abstract-technology-connection-lines-in-dark-blue-background-23216-large.mp4',
-    'https://assets.mixkit.co/videos/preview/mixkit-circuit-board-with-glowing-lines-and-dots-23215-large.mp4'
+const TypewriterHeadline = () => {
+  const messages = [
+    "Transform Digital Behavior Into Productivity Insights",
+    "Discover Hidden Patterns Inside Student Productivity",
+    "Turn Technology Usage Data Into Actionable Research"
   ];
+  
+  const [index, setIndex] = useState(0);
+  const [subIndex, setSubIndex] = useState(0);
+  const [reverse, setReverse] = useState(false);
 
+  // Typewriter effect logic
+  useEffect(() => {
+    if (subIndex === messages[index].length + 1 && !reverse) {
+      setTimeout(() => setReverse(true), 2500);
+      return;
+    }
+
+    if (subIndex === 0 && reverse) {
+      setReverse(false);
+      setIndex((prev) => (prev + 1) % messages.length);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setSubIndex((prev) => prev + (reverse ? -1 : 1));
+    }, reverse ? 40 : 70);
+
+    return () => clearTimeout(timeout);
+  }, [subIndex, index, reverse]);
+
+  return (
+    <h1 className="text-white font-serif font-medium tracking-tight leading-[1.05] min-h-[3.2em] md:min-h-[2.1em] flex flex-col justify-center items-center" 
+        style={{ fontSize: 'clamp(2.5rem, 8vw, 7.5rem)' }}>
+      <span className="block max-w-[15ch] md:max-w-none text-center">
+        {messages[index].substring(0, subIndex)}
+        <span className="inline-block w-[2px] h-[0.9em] bg-white ml-1 animate-pulse" style={{ verticalAlign: 'middle' }} />
+      </span>
+    </h1>
+  );
+};
+
+const LandingPage = () => {
   const partners = [
     'Iqra University',
     'Research Hub',
@@ -42,28 +78,25 @@ const LandingPage = () => {
 
   return (
     <div className="relative min-h-screen bg-black text-white selection:bg-white/30 overflow-x-hidden">
-      <FadingVideo sources={videoSources} />
+      <AnimatedBackground />
 
       {/* Hero Section */}
-      <section className="relative pt-52 pb-40 px-6 z-10">
+      <section className="relative pt-60 pb-40 px-6 z-10">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="inline-flex items-center space-x-3 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl mb-12"
+            className="inline-flex items-center space-x-3 px-5 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl mb-14"
           >
-            <span className="flex h-2 w-2 rounded-full bg-white animate-pulse" />
-            <span className="text-[10px] font-semibold tracking-[0.25em] uppercase text-white/80">
-              Future of Productivity Intelligence
+            <span className="flex h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/60">
+              Modern AI-Powered Analytics Platform
             </span>
           </motion.div>
 
-          <div className="mb-10 max-w-5xl mx-auto">
-            <BlurText 
-              text="Transform Digital Behavior Into Productivity Insights"
-              className="text-6xl md:text-[7.5rem] font-serif font-medium tracking-tight leading-[1] text-white"
-            />
+          <div className="mb-14">
+            <TypewriterHeadline />
           </div>
 
           <motion.p
@@ -71,9 +104,9 @@ const LandingPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.5, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="text-lg md:text-2xl text-white/70 max-w-3xl mx-auto mb-16 leading-relaxed font-light"
+            className="text-lg md:text-2xl text-white/50 max-w-3xl mx-auto mb-20 leading-[1.6] font-light tracking-wide"
           >
-            Analyze screen time, social media usage, study habits, sleep duration, and productivity patterns through <span className="text-white italic">advanced statistical analysis</span>, AI-powered interpretations, and predictive modeling.
+            Analyze screen time, social media usage, study habits, and sleep patterns through <span className="text-white italic">advanced statistical analysis</span>, AI-powered interpretations, and predictive modeling for better productivity outcomes.
           </motion.p>
 
           <motion.div
@@ -81,12 +114,12 @@ const LandingPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.8, duration: 1 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-8"
+            className="flex flex-col sm:flex-row items-center justify-center gap-10"
           >
-            <Link to="/register" className="btn-primary px-12 py-5 text-[15px] tracking-wide text-black bg-white rounded-full">
+            <Link to="/register" className="btn-primary px-14 py-5 text-[15px] tracking-[0.1em] uppercase font-bold">
               Start Analysis
             </Link>
-            <Link to="/dashboard/reports" className="btn-secondary px-12 py-5 text-[15px] tracking-wide text-white border border-white/20 rounded-full">
+            <Link to="/dashboard/reports" className="btn-secondary px-14 py-5 text-[15px] tracking-[0.1em] uppercase font-bold">
               View Research
             </Link>
           </motion.div>
