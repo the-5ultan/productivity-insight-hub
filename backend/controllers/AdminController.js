@@ -1,60 +1,96 @@
-const { User, Dataset, Report, ActivityLog, GuestSession, DatasetRecord } = require('../models');
-const StatisticsEngine = require('../statistics');
+const { User, UserProfile, ActivityLog, GuestSession } = require('../models');
+const { Sequelize } = require('sequelize');
 
-class AdminController {
-  async getStats(req, res) {
-    try {
-      const totalUsers = await User.count();
-      const totalDatasets = await Dataset.count();
-      const totalReports = await Report.count();
-      const totalGuestSessions = await GuestSession.count();
-      
-      // Calculate Most Influential Productivity Factor
-      const allRecords = await DatasetRecord.findAll();
-      const fields = ['screen_time', 'social_media_usage', 'study_time', 'sleep_duration', 'apps_used'];
-      
-      let mostInfluential = { field: 'None', correlation: 0 };
-      
-      if (allRecords.length > 0) {
-        const prodScores = allRecords.map(r => r.productivity_score);
-        fields.forEach(field => {
-          const fieldData = allRecords.map(r => r[field]);
-          const corr = Math.abs(StatisticsEngine.calculateCorrelation(fieldData, prodScores));
-          if (corr > mostInfluential.correlation) {
-            mostInfluential = { field, correlation: corr };
-          }
-        });
+const getUsers = async (req, res, next) => {
+  try {
+    const users = await User.findAll({
+      attributes: { exclude: ['password'] },
+      include: [{ model: UserProfile, as: 'profile' }],
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.status(200).json({
+      success: true,
+      data: users
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getUserById = async (req, res, next) => {
+  try {
+    const user = await User.findByPk(req.params.id, {
+      attributes: { exclude: ['password'] },
+      include: [{ model: UserProfile, as: 'profile' }]
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getActivityLogs = async (req, res, next) => {
+  try {
+    const logs = await ActivityLog.findAll({
+      include: [{ model: User, attributes: ['name', 'email'] }],
+      order: [['createdAt', 'DESC']],
+      limit: 100
+    });
+
+    res.status(200).json({
+      success: true,
+      data: logs
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getStatistics = async (req, res, next) => {
+  try {
+    const totalUsers = await User.count();
+    const verifiedUsers = await User.count({ where: { isEmailVerified: true } });
+    const completedProfiles = await User.count({ where: { profileCompleted: true } });
+    
+    const guestSessions = await GuestSession.count();
+
+    const researchAreaStats = await UserProfile.findAll({
+      attributes: [
+        'researchArea',
+        [Sequelize.fn('COUNT', Sequelize.col('researchArea')), 'count']
+      ],
+      group: ['researchArea']
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        userMetrics: {
+          totalUsers,
+          verifiedUsers,
+          completedProfiles
+        },
+        guestSessions,
+        researchAreaStats
       }
-
-      res.json({
-        totalUsers,
-        totalDatasets,
-        totalReports,
-        totalGuestSessions,
-        mostInfluential: mostInfluential.field.replace('_', ' ').toUpperCase()
-      });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
+    });
+  } catch (error) {
+    next(error);
   }
+};
 
-  async getAllUsers(req, res) {
-    try {
-      const users = await User.findAll({ attributes: { exclude: ['password'] } });
-      res.json(users);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-
-  async getActivityLogs(req, res) {
-    try {
-      const logs = await ActivityLog.findAll({ include: [User], order: [['created_at', 'DESC']], limit: 100 });
-      res.json(logs);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-}
-
-module.exports = new AdminController();
+module.exports = {
+  getUsers,
+  getUserById,
+  getActivityLogs,
+  getStatistics
+};

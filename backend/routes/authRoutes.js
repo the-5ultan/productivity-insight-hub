@@ -1,26 +1,28 @@
 const express = require('express');
-const passport = require('passport');
-const AuthController = require('../controllers/AuthController');
-const { authMiddleware } = require('../middleware/authMiddleware');
-
 const router = express.Router();
+const authController = require('../controllers/AuthController');
+const { otpLimiter } = require('../middleware/rateLimiter');
+const passport = require('../config/passport');
+const { generateAccessToken, generateRefreshToken } = require('../utils/jwt');
 
-// @route   POST api/auth/register
-router.post('/register', AuthController.register);
+router.post('/register', otpLimiter, authController.register);
+router.post('/verify-otp', authController.verifyOtp);
+router.post('/login', authController.login);
+router.post('/forgot-password', otpLimiter, authController.forgotPassword);
+router.post('/reset-password', authController.resetPassword);
 
-// @route   POST api/auth/login
-router.post('/login', AuthController.login);
-
-// @route   GET api/auth/me
-router.get('/me', authMiddleware, AuthController.getCurrentUser);
-
-// @route   GET api/auth/google
+// Google OAuth
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// @route   GET api/auth/google/callback
 router.get('/google/callback', 
-  passport.authenticate('google', { session: false, failureRedirect: '/login' }),
-  AuthController.googleCallback
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    const accessToken = generateAccessToken(req.user);
+    const refreshToken = generateRefreshToken(req.user);
+    
+    // Redirect to frontend with tokens
+    res.redirect(`${process.env.FRONTEND_URL}/auth-success?accessToken=${accessToken}&refreshToken=${refreshToken}`);
+  }
 );
 
 module.exports = router;

@@ -21,20 +21,34 @@ const User = sequelize.define('User', {
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: true // Nullable for Google Auth users
+    allowNull: true
   },
-  google_id: {
+  googleId: {
     type: DataTypes.STRING,
     allowNull: true
   },
   role: {
     type: DataTypes.ENUM('user', 'admin'),
     defaultValue: 'user'
+  },
+  isEmailVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  profileCompleted: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  accountStatus: {
+    type: DataTypes.ENUM('pending', 'active', 'suspended'),
+    defaultValue: 'pending'
+  },
+  lastLogin: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: false
+  timestamps: true
 });
 
 module.exports = User;

@@ -7,18 +7,24 @@ const GuestSession = sequelize.define('GuestSession', {
     primaryKey: true,
     autoIncrement: true
   },
-  session_id: {
+  sessionId: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  activity: {
+  ipAddress: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  userAgent: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  activities: {
     type: DataTypes.JSON,
     allowNull: true
   }
 }, {
-  timestamps: true,
-  createdAt: 'timestamp',
-  updatedAt: false
+  timestamps: true
 });
 
 module.exports = GuestSession;

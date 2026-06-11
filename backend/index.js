@@ -2,19 +2,23 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const passport = require('passport');
-require('./config/passport'); // Initialize passport config
 const sequelize = require('./config/db');
-const models = require('./models');
+const { apiLimiter } = require('./middleware/rateLimiter');
+const errorHandler = require('./middleware/errorHandler');
+
+// Load environment variables
+dotenv.config();
+
+// Initialize passport config
+require('./config/passport'); 
 
 // Route imports
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 const datasetRoutes = require('./routes/datasetRoutes');
 const analysisRoutes = require('./routes/analysisRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-
-// Load environment variables
-dotenv.config();
 
 const app = express();
 
@@ -23,9 +27,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
+app.use('/api', apiLimiter);
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/datasets', datasetRoutes);
 app.use('/api/analysis', analysisRoutes);
 app.use('/api/reports', reportRoutes);
@@ -35,6 +41,9 @@ app.use('/api/admin', adminRoutes);
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Techlytics API' });
 });
+
+// Centralized Error Handling
+app.use(errorHandler);
 
 // Sync Database
 sequelize.sync({ alter: true })
