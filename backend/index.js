@@ -48,7 +48,26 @@ app.use(errorHandler);
 // Sync Database
 sequelize.sync({ alter: true })
   .then(() => {
-    console.log('Database synced successfully');
+    console.log('✓ Database Connected');
+    
+    // Diagnostic Logs
+    if (process.env.JWT_ACCESS_SECRET && process.env.JWT_REFRESH_SECRET) {
+      console.log('✓ JWT Loaded');
+    } else {
+      console.log('⚠ JWT Secret Missing');
+    }
+
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+      console.log('✓ SMTP Loaded');
+    } else {
+      console.log('⚠ SMTP Credentials Missing');
+    }
+
+    if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+      console.log('✓ Google OAuth Loaded');
+    } else {
+      console.log('⚠ Google OAuth Credentials Missing');
+    }
   })
   .catch((err) => {
     console.error('Error syncing database:', err);
