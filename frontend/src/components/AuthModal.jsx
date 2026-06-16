@@ -42,11 +42,78 @@ const AuthModal = ({ isOpen, onClose }) => {
         exit="exit"
         className="relative w-full max-w-4xl bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row"
       >
-        {/* Left Side: Form */}
+        {/* Global Close Button */}
+        <button 
+          onClick={onClose} 
+          className="absolute top-8 right-8 z-[110] text-white/40 hover:text-white transition-colors"
+        >
+          <X size={24} />
+        </button>
+
+        {/* Left Side: Summary Card (Visible only in Step 3 on Desktop) */}
+        <AnimatePresence>
+          {step === 3 && (
+            <motion.div 
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -100, opacity: 0 }}
+              className="hidden md:flex w-80 bg-white/[0.02] border-r border-white/5 p-8 flex-col justify-end"
+            >
+              <div className="flex-1 flex flex-col justify-center">
+                <div className="mb-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-white/60">Profile Completion</span>
+                    <span className="text-[11px] font-bold text-white">75%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: "75%" }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      className="h-full bg-white" 
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-white/40 block">Member Benefits</span>
+                  {[
+                    "Save Analysis History",
+                    "Generate Reports",
+                    "Export Results",
+                    "Personalized Insights"
+                  ].map((benefit, i) => (
+                    <motion.div 
+                      key={benefit} 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 + (i * 0.1) }}
+                      className="flex items-center gap-3 text-[13px] text-white/70"
+                    >
+                      <CheckCircle2 size={16} className="text-white/40" />
+                      {benefit}
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-8 border-t border-white/5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40">
+                    <User size={20} />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-medium text-white">New Researcher</div>
+                    <div className="text-[11px] text-white/40">Joining June 2026</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Right Side / Main Side: Form */}
         <div className="flex-1 p-8 md:p-12">
-          <button onClick={onClose} className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors">
-            <X size={24} />
-          </button>
 
           <AnimatePresence mode="wait">
             {step === 1 && (
