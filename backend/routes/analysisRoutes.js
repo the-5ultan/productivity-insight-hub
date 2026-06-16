@@ -1,15 +1,15 @@
 const express = require('express');
 const AnalysisController = require('../controllers/AnalysisController');
-const { authMiddleware } = require('../middleware/authMiddleware');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 // Public routes (for guests)
-router.get('/analyze/guest/:datasetId', AnalysisController.analyze);
-router.post('/predict', AnalysisController.predict);
+router.get('/analyze/guest/:datasetId', (req, res) => AnalysisController.analyze(req, res));
+router.post('/predict', (req, res) => AnalysisController.predict(req, res));
 
 // Protected routes
-router.get('/analyze/:datasetId', authMiddleware, AnalysisController.analyze);
-router.post('/compare', authMiddleware, AnalysisController.compare);
+router.get('/analyze/:datasetId', authMiddleware, (req, res) => AnalysisController.analyze(req, res));
+router.post('/compare', authMiddleware, (req, res) => AnalysisController.compare(req, res));
 
 module.exports = router;

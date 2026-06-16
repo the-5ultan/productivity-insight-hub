@@ -1,70 +1,53 @@
-const jwt = require('jsonwebtoken');
+const { User, UserProfile } = require('../models');
 const bcrypt = require('bcryptjs');
-const { User } = require('../models');
+const { generateAccessToken, generateRefreshToken } = require('../utils/jwt');
 
-class AuthService {
-  async register({ name, email, password }) {
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      throw new Error('User already exists');
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      role: 'user'
-    });
-
-    return this.generateToken(user);
+const registerUser = async (name, email, password) => {
+  const existingUser = await User.findOne({ where: { email } });
+  if (existingUser) {
+    throw new Error('Email already registered');
   }
 
-  async login({ email, password }) {
-    const user = await User.findOne({ where: { email } });
-    if (!user || !user.password) {
-      throw new Error('Invalid credentials');
-    }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await User.create({
+    name,
+    email,
+    password: hashedPassword,
+    role: 'user',
+    accountStatus: 'pending'
+  });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      throw new Error('Invalid credentials');
-    }
+  // Create empty profile
+  await UserProfile.create({ userId: user.id });
 
-    return this.generateToken(user);
+  return user;
+};
+
+const loginUser = async (email, password) => {
+  const user = await User.findOne({ where: { email } });
+  if (!user) {
+    throw new Error('Invalid email or password');
   }
 
-  async googleAuth(profile) {
-    let user = await User.findOne({ where: { google_id: profile.id } });
-    if (!user) {
-      user = await User.findOne({ where: { email: profile.emails[0].value } });
-      if (user) {
-        user.google_id = profile.id;
-        await user.save();
-      } else {
-        user = await User.create({
-          name: profile.displayName,
-          email: profile.emails[0].value,
-          google_id: profile.id,
-          role: 'user'
-        });
-      }
-    }
-
-    return this.generateToken(user);
+  if (user.accountStatus === 'suspended') {
+    throw new Error('Account suspended. Please contact support.');
   }
 
-  generateToken(user) {
-    const payload = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role
-    };
-
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
-    return { token, user: payload };
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error('Invalid email or password');
   }
-}
 
-module.exports = new AuthService();
+  user.lastLogin = new Date();
+  await user.save();
+
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  return { user, accessToken, refreshToken };
+};
+
+module.exports = {
+  registerUser,
+  loginUser
+};
