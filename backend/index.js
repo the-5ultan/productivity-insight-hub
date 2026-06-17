@@ -1,13 +1,22 @@
+// Load environment variables at the very beginning
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
+const session = require('express-session');
 const passport = require('passport');
 const sequelize = require('./config/db');
 const { apiLimiter } = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
 
-// Load environment variables
-dotenv.config();
+// Strict Environment Validation
+const requiredEnv = ['JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET'];
+requiredEnv.forEach(envVar => {
+  if (!process.env[envVar]) {
+    console.error(`CRITICAL ERROR: ${envVar} is missing in .env file`);
+    process.exit(1);
+  }
+});
 
 // Initialize passport config
 require('./config/passport'); 
@@ -26,7 +35,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Session support for Passport
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'techlytics_research_secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
 app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/api', apiLimiter);
 
 // Routes

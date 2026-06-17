@@ -12,10 +12,15 @@ router.post('/forgot-password', otpLimiter, authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
 
 // Google OAuth
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', (req, res, next) => {
+  console.log('--- Google OAuth Initiation ---');
+  console.log('Request Headers Host:', req.headers.host);
+  console.log('Is Secure:', req.secure);
+  next();
+}, passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
     const accessToken = generateAccessToken(req.user);
     const refreshToken = generateRefreshToken(req.user);

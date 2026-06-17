@@ -6,9 +6,38 @@ import { useNavigate } from 'react-router-dom';
 const AuthModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   if (!isOpen) return null;
+
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const handleContinue = async () => {
+    setError('');
+    if (!email.trim()) {
+      setError('Email address is required.');
+      return;
+    }
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    // Simulate API delay to prevent rapid clicks
+    setTimeout(() => {
+      setIsSubmitting(false);
+      nextStep();
+    }, 600);
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = 'http://localhost:5000/api/auth/google';
+  };
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -130,13 +159,17 @@ const AuthModal = ({ isOpen, onClose }) => {
                         type="email" 
                         placeholder="you@example.com"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-all"
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (error) setError('');
+                        }}
+                        className={`w-full bg-white/5 border ${error ? 'border-red-500/50' : 'border-white/10'} rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-all`}
                       />
                     </div>
+                    {error && <p className="text-red-500 text-[11px] ml-1 tracking-wide">{error}</p>}
                   </div>
 
-                  <button onClick={nextStep} className="btn-primary w-full py-4 text-[15px] flex items-center justify-center gap-2 group">
+                  <button onClick={handleContinue} className="btn-primary w-full py-4 text-[15px] flex items-center justify-center gap-2 group">
                     Continue <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   </button>
 
@@ -145,7 +178,10 @@ const AuthModal = ({ isOpen, onClose }) => {
                     <span className="relative px-4 bg-[#0a0a0a] text-[10px] uppercase tracking-[0.2em] text-white/20 font-bold">OR</span>
                   </div>
 
-                  <button className="w-full bg-white/5 border border-white/10 hover:bg-white/10 rounded-2xl py-4 text-[15px] font-semibold text-white transition-all flex items-center justify-center gap-3">
+                  <button 
+                    onClick={handleGoogleLogin}
+                    className="w-full bg-white/5 border border-white/10 hover:bg-white/10 rounded-2xl py-4 text-[15px] font-semibold text-white transition-all flex items-center justify-center gap-3"
+                  >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                       <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.07-3.71 1.07-2.85 0-5.27-1.92-6.13-4.51H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>

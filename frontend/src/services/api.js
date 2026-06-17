@@ -23,6 +23,7 @@ export const datasetAPI = {
   upload: (formData) => api.post('/datasets/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
+  manual: (data) => api.post('/datasets/manual', data),
   getAll: () => api.get('/datasets'),
   getById: (id) => api.get(`/datasets/${id}`),
   delete: (id) => api.delete(`/datasets/${id}`),

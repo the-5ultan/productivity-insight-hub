@@ -12,6 +12,13 @@ const UserProfile = sequelize.define('UserProfile', {
     allowNull: false,
     unique: true
   },
+  secondaryEmail: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      isEmail: true
+    }
+  },
   dateOfBirth: {
     type: DataTypes.DATEONLY,
     allowNull: true

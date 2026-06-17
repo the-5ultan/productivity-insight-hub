@@ -1,0 +1,124 @@
+FACULTY OF ENGINEERING SCIENCES AND TECHNOLOGY
+BS(SE)V1.0
+Department: Software Engineering Program: BS (SE)
+
+PROBABILITY & STATISTICS
+Announced date: 06/05/2026 Due Date: 10/06/2026 Total Marks = 05
+
+Complex Computing Problem (CCP)
+Mapped CLO | SDG | Complex Problem Solving Mapped
+CLO3 | 4 & 9 | WP1 (Depth of knowledge required)
+| | WP2 (Range of conflicting requirements required)
+| | WP3 (Depth of analysis required)
+
+Title: Smart Technology Usage and Productivity Analysis System
+
+Problem Statement
+A technology research organization is conducting a study to analyze how digital technology usage affects student productivity and cognitive performance.
+The organization wants to investigate whether certain measurable technology usage indicators can be used to predict academic productivity and performance efficiency.
+
+For this purpose, data is collected from a sample of students, including:
+• Daily Screen Time (hours)
+• Social Media Usage (hours/day)
+• Online Study Time (hours/day)
+• Sleep Duration (hours/night)
+• Device Type (Smartphone/Laptop/Tablet)
+• Number of Apps Used Daily
+• Productivity Score (out of 10)
+
+The objective is to analyze relationships between technology usage patterns and productivity outcomes and identify which factors have the strongest impact on student performance.
+
+Page 1 of 4
+
+---
+
+FACULTY OF ENGINEERING SCIENCES AND TECHNOLOGY
+BS(SE)V1.0
+
+Dataset
+Student | Screen Time | Social Media | Study Time | Sleep | Device | Apps Used | Productivity Score
+1 | 7 | 4 | 2 | 5 | Smartphone | 15 | 5
+2 | 4 | 2 | 5 | 7 | Laptop | 10 | 8
+3 | 8 | 5 | 1 | 4 | Smartphone | 18 | 4
+4 | 3 | 1 | 6 | 8 | Laptop | 8 | 9
+5 | 6 | 3 | 3 | 6 | Tablet | 12 | 6
+6 | 9 | 6 | 1 | 4 | Smartphone | 20 | 3
+7 | 5 | 2 | 4 | 7 | Laptop | 11 | 7
+8 | 7 | 4 | 2 | 5 | Smartphone | 16 | 5
+9 | 4 | 1 | 6 | 8 | Laptop | 9 | 9
+10 | 6 | 3 | 3 | 6 | Tablet | 13 | 6
+
+Deliverables
+Part A: Problem Identification and Decision-Making Context
+Identify and clearly articulate the decision-making problem presented in the given technology usage scenario.
+Explain how multiple digital behavior indicators (screen time, social media usage, study time, sleep duration, device type, etc.) contribute to uncertainty in evaluating productivity.
+
+Your response must include:
+• Definition of the core decision-making problem
+• Identification of conflicting technology usage variables
+• Explanation of why statistical analysis is required for decision-making
+
+Part B: Analytical Solution of the Problem
+Provide a complete statistical and analytical solution to the problem identified in Part A.
+
+Page 2 of 4
+
+---
+
+FACULTY OF ENGINEERING SCIENCES AND TECHNOLOGY
+BS(SE)V1.0
+
+Your solution must include:
+• Descriptive statistics (mean, variance, standard deviation)
+• Correlation analysis between technology usage factors and productivity score
+• Probability-based interpretation of productivity levels
+• Identification of key influencing digital behavior factors
+• Preliminary predictive interpretation of productivity outcomes
+
+Part C: Critical Evaluation of the Solution
+Discuss and evaluate the solution provided in Part B under a modified scenario:
+Assume that a key influencing variable (e.g., Social Media Usage) is removed from the dataset.
+Analyze whether the relationship between remaining variables (screen time, study time, sleep duration, productivity score) still shows a significant association.
+
+Your discussion must address:
+• Impact of removing a key digital behavior variable on correlation results
+• Reliability of productivity prediction after removal
+• Changes in strength of association among remaining variables
+• Interpretation of dependency among variables after exclusion
+
+Part D: Alternative Approaches to Problem Solving
+Critically analyze whether the problem and its solution can be solved using alternative methods.
+
+Possible alternative approaches:
+• Regression-based modeling instead of correlation analysis
+• Machine learning approaches (decision trees, random forest, logistic regression)
+• Weighted digital productivity index model
+• Multi-criteria decision analysis (MCDA)
+
+Explain how these methods:
+• Improve prediction accuracy
+
+Page 3 of 4
+
+---
+
+FACULTY OF ENGINEERING SCIENCES AND TECHNOLOGY
+BS(SE)V1.0
+
+• Handle multiple digital behavior variables effectively
+• Provide deeper insights into productivity patterns
+
+Category of Deliverables
+Category | Deliverables
+Conceptual | Problem statement, UML diagrams, flowcharts
+Implementation | SPSS, Excel, Python or any other statistical/analytical tool
+Report | Project report, user manual
+Presentation | PowerPoint slides and Word/PDF report
+
+CCP Attributes Mapped
+WP | Description | Justification
+WP1 | Depth of Knowledge | Requires statistical modelling of technology usage data
+WP2 | Range of Conflicting Requirements | Requires managing conflicting effects of digital habits
+WP3 | Depth of Analysis | Involves correlation, probability, and predictive analysis
+
+Page 4 of 4

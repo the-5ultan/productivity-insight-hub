@@ -5,9 +5,21 @@ const activityService = require('../services/activityService');
 const { User } = require('../models');
 const bcrypt = require('bcryptjs');
 
+const validateEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
 const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email address is required.' });
+    }
+    if (!validateEmail(email)) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+    }
+
     const user = await authService.registerUser(name, email, password);
     
     const otp = await otpService.createOtp(email, user.id);
@@ -27,6 +39,11 @@ const register = async (req, res, next) => {
 const verifyOtp = async (req, res, next) => {
   try {
     const { email, otpCode } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email address is required.' });
+    }
+
     const result = await otpService.verifyOtp(email, otpCode);
 
     if (!result.success) {
@@ -53,6 +70,14 @@ const verifyOtp = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email address is required.' });
+    }
+    if (!validateEmail(email)) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+    }
+
     const { user, accessToken, refreshToken } = await authService.loginUser(email, password);
 
     await activityService.logActivity(user.id, 'LOGIN', 'User logged in successfully', req.ip);
@@ -77,6 +102,14 @@ const login = async (req, res, next) => {
 const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email address is required.' });
+    }
+    if (!validateEmail(email)) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+    }
+
     const user = await User.findOne({ where: { email } });
     
     if (user) {
