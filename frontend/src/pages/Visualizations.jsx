@@ -53,21 +53,25 @@ const Visualizations = () => {
 
   const getBarData = () => {
     if (!analysisData?.descriptive) return [];
-    console.log("Bar chart data:", analysisData.descriptive);
-    return Object.keys(analysisData.descriptive).map(key => ({
+    const data = Object.keys(analysisData.descriptive).map(key => ({
       name: key.replace('_', ' '),
-      mean: analysisData.descriptive[key]?.mean != null ? Number(analysisData.descriptive[key].mean).toFixed(2) : "0.00"
+      mean: analysisData.descriptive[key]?.mean ?? 0
     }));
+    console.log("Bar chart data array:", data);
+    console.log("Is array:", Array.isArray(data));
+    return data;
   };
 
   const getCorrelationData = () => {
     if (!analysisData?.correlationMatrix?.productivity_score) return [];
     const prodCorr = analysisData.correlationMatrix.productivity_score;
-    console.log("Correlation data:", prodCorr);
-    return Object.keys(prodCorr).filter(k => k !== 'productivity_score').map(k => ({
+    const data = Object.keys(prodCorr).filter(k => k !== 'productivity_score').map(k => ({
       name: k.replace('_', ' '),
-      correlation: prodCorr[k] != null ? Number(prodCorr[k]).toFixed(2) : "0.00"
+      correlation: prodCorr[k] ?? 0
     }));
+    console.log("Correlation chart data array:", data);
+    console.log("Is array:", Array.isArray(data));
+    return data;
   };
 
   return (
@@ -79,10 +83,11 @@ const Visualizations = () => {
         ) : (
         <select 
           onChange={(e) => handleDatasetSelect(e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary-accent"
+          className="bg-[rgba(20,20,20,0.75)] backdrop-blur-lg border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 appearance-none cursor-pointer"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: '32px' }}
         >
           {Array.isArray(datasets) && datasets.map(ds => (
-            <option key={ds.id} value={ds.id}>{ds.dataset_name}</option>
+            <option key={ds.id} value={ds.id} className="bg-[#111827] text-white">{ds.dataset_name}</option>
           ))}
         </select>
         )}
@@ -100,9 +105,9 @@ const Visualizations = () => {
               <BarChart3 className="text-primary-accent" size={20} />
               <h3 className="text-lg">Average Metrics</h3>
             </div>
-            <div className="h-80 w-full">
+            <div className="h-80 w-full" style={{ minHeight: '320px' }}>
               {getBarData().length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={getBarData()}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
                   <XAxis dataKey="name" stroke="#9CA3AF" fontSize={10} />
@@ -124,9 +129,9 @@ const Visualizations = () => {
               <TrendingUp className="text-primary-accent" size={20} />
               <h3 className="text-lg">Productivity Correlations</h3>
             </div>
-            <div className="h-80 w-full">
+            <div className="h-80 w-full" style={{ minHeight: '320px' }}>
               {getCorrelationData().length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={getCorrelationData()} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
                   <XAxis type="number" stroke="#9CA3AF" domain={[-1, 1]} />

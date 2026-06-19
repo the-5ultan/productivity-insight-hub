@@ -6,7 +6,7 @@ import { reportAPI, datasetAPI } from '../services/api';
 const Reports = () => {
   const [reports, setReports] = useState([]);
   const [datasets, setDatasets] = useState([]);
-  const [generating, setGenerating] = useState(false);
+  const [generating, setGenerating] = useState(null);
 
   useEffect(() => {
     fetchReports();
@@ -25,38 +25,67 @@ const Reports = () => {
   const fetchDatasets = async () => {
     try {
       const response = await datasetAPI.getAll();
-      setDatasets(response.data);
+      const data = Array.isArray(response.data) ? response.data : Array.isArray(response.data?.data) ? response.data.data : [];
+      setDatasets(data);
     } catch (error) {
       console.error('Error fetching datasets:', error);
     }
   };
 
-  const handleGenerate = async (datasetId) => {
-    setGenerating(true);
+  const triggerDownload = (response, filename) => {
+    const contentType = response.headers?.['content-type'] || '';
+    const blob = new Blob([response.data], {
+      type: contentType.includes('pdf') ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleGeneratePDF = async (datasetId) => {
+    console.log("Generate PDF clicked for dataset:", datasetId);
+    setGenerating(datasetId);
     try {
-      // In a real app, we'd call a report generation endpoint
-      // For now, let's assume we call generatePDF via analysis or a dedicated report endpoint
-      await reportAPI.generatePDF(datasetId);
+      const response = await reportAPI.generatePDF(datasetId);
+      triggerDownload(response, `Dataset_Report_${datasetId}.pdf`);
       fetchReports();
     } catch (error) {
-      console.error('Error generating report:', error);
+      console.error('Error generating PDF:', error);
+      const msg = error.response?.data?.error || error.message || 'Failed to generate PDF';
+      alert(`PDF generation failed: ${msg}`);
     } finally {
-      setGenerating(false);
+      setGenerating(null);
+    }
+  };
+
+  const handleGenerateExcel = async (datasetId) => {
+    console.log("Generate Excel clicked for dataset:", datasetId);
+    setGenerating(datasetId);
+    try {
+      const response = await reportAPI.generateExcel(datasetId);
+      triggerDownload(response, `Dataset_Report_${datasetId}.xlsx`);
+      fetchReports();
+    } catch (error) {
+      console.error('Error generating Excel:', error);
+      const msg = error.response?.data?.error || error.message || 'Failed to generate Excel';
+      alert(`Excel generation failed: ${msg}`);
+    } finally {
+      setGenerating(null);
     }
   };
 
   const handleDownload = async (reportId, fileName) => {
     try {
       const response = await reportAPI.download(reportId);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', fileName || 'report.pdf');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      triggerDownload(response, fileName || 'report');
     } catch (error) {
       console.error('Download failed:', error);
+      alert('Download failed: ' + (error.response?.data?.error || error.message));
     }
   };
 
@@ -79,22 +108,22 @@ const Reports = () => {
               >
                 <div className="flex items-center space-x-4">
                   <div className="p-3 bg-white/5 rounded-xl text-primary-accent">
-                    {report.report_path.endsWith('.pdf') ? <FileText size={24} /> : <File size={24} />}
+                    {report.report_path?.endsWith('.pdf') ? <FileText size={24} /> : <File size={24} />}
                   </div>
                   <div>
-                    <h3 className="font-semibold">{report.report_path.split('\\').pop().split('-').pop()}</h3>
+                    <h3 className="font-semibold">{report.report_path?.split('\\').pop()?.split('-').pop() || 'Report'}</h3>
                     <div className="flex items-center space-x-3 text-xs text-secondary-accent">
                       <span className="flex items-center space-x-1">
                         <Calendar size={12} />
-                        <span>{new Date(report.generated_at).toLocaleDateString()}</span>
+                        <span>{report.generated_at ? new Date(report.generated_at).toLocaleDateString() : 'Unknown date'}</span>
                       </span>
                       <span>•</span>
-                      <span>{report.report_path.split('.').pop().toUpperCase()}</span>
+                      <span>{report.report_path?.split('.').pop()?.toUpperCase() || 'FILE'}</span>
                     </div>
                   </div>
                 </div>
                 <button 
-                  onClick={() => handleDownload(report.id, report.report_path.split('\\').pop())}
+                  onClick={() => handleDownload(report.id, report.report_path?.split('\\').pop() || 'report')}
                   className="p-3 hover:bg-primary-accent hover:text-background rounded-full transition-all"
                 >
                   <Download size={20} />
@@ -124,14 +153,18 @@ const Reports = () => {
                   <span className="text-sm font-medium truncate">{ds.dataset_name}</span>
                   <div className="flex space-x-2">
                     <button 
-                      onClick={() => handleGenerate(ds.id)}
-                      disabled={generating}
+                      onClick={() => handleGeneratePDF(ds.id)}
+                      disabled={generating === ds.id}
                       className="flex-1 text-[10px] bg-primary-accent text-background font-bold py-2 rounded-lg uppercase tracking-wider hover:opacity-90 disabled:opacity-50"
                     >
-                      PDF Report
+                      {generating === ds.id ? 'Generating...' : 'PDF Report'}
                     </button>
-                    <button className="flex-1 text-[10px] bg-white/10 text-primary-accent font-bold py-2 rounded-lg uppercase tracking-wider hover:bg-white/20">
-                      Excel Export
+                    <button 
+                      onClick={() => handleGenerateExcel(ds.id)}
+                      disabled={generating === ds.id}
+                      className="flex-1 text-[10px] bg-white/10 text-primary-accent font-bold py-2 rounded-lg uppercase tracking-wider hover:bg-white/20 disabled:opacity-50"
+                    >
+                      {generating === ds.id ? 'Generating...' : 'Excel Export'}
                     </button>
                   </div>
                 </div>

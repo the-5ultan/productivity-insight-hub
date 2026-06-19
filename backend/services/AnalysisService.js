@@ -56,13 +56,16 @@ class AnalysisService {
     const descriptive = {};
 
     fields.forEach(field => {
-      const data = records.map(r => r[field]);
+      const data = records.map(r => r[field]).filter(v => v != null);
       descriptive[field] = {
         mean: StatisticsEngine.calculateMean(data),
         median: StatisticsEngine.calculateMedian(data),
         mode: StatisticsEngine.calculateMode(data),
         variance: StatisticsEngine.calculateVariance(data),
-        stdDev: StatisticsEngine.calculateStandardDeviation(data)
+        stdDev: StatisticsEngine.calculateStandardDeviation(data),
+        min: data.length > 0 ? Math.min(...data) : 0,
+        max: data.length > 0 ? Math.max(...data) : 0,
+        range: data.length > 0 ? Math.max(...data) - Math.min(...data) : 0
       };
     });
 

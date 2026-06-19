@@ -9,11 +9,10 @@ class ReportController {
     try {
       const { datasetId } = req.params;
       const user_id = req.user.id;
-      const { stats } = await AnalysisService.analyzeDataset(datasetId, user_id);
-      const dataset = await DatasetService.getDatasetWithRecords(datasetId);
-      
-      const report = await ReportService.generatePDF(stats, dataset.dataset_name, user_id);
-      res.json(report);
+      const reportData = await this.buildReportData(datasetId, user_id);
+      const report = await ReportService.generatePDF(reportData);
+      const absolutePath = path.resolve(report.report_path);
+      res.download(absolutePath, `Dataset_Report_${datasetId}.pdf`);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -23,13 +22,81 @@ class ReportController {
     try {
       const { datasetId } = req.params;
       const user_id = req.user.id;
-      const dataset = await DatasetService.getDatasetWithRecords(datasetId);
-      
-      const report = await ReportService.generateExcel(dataset.DatasetRecords, dataset.dataset_name, user_id);
-      res.json(report);
+      const reportData = await this.buildReportData(datasetId, user_id);
+      const report = await ReportService.generateExcel(reportData);
+      const absolutePath = path.resolve(report.report_path);
+      res.download(absolutePath, `Dataset_Report_${datasetId}.xlsx`);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
+  }
+
+  async buildReportData(datasetId, userId) {
+    const { stats } = await AnalysisService.analyzeDataset(datasetId, userId);
+    const dataset = await DatasetService.getDatasetWithRecords(datasetId);
+
+    const records = dataset.DatasetRecords || [];
+    const rawRecords = records.map(r => r.dataValues || r);
+
+    const { descriptive, correlationMatrix, probabilities, insights, problemIdentification, impactAnalysis, advancedAnalysis } = stats;
+
+    const summary = this.generateSummary(descriptive, correlationMatrix, advancedAnalysis, insights);
+
+    return {
+      userId,
+      dataset: {
+        id: datasetId,
+        name: dataset.dataset_name,
+        uploadDate: dataset.upload_date,
+        recordCount: rawRecords.length,
+        analysisType: 'Comprehensive Statistical Analysis'
+      },
+      rawRecords,
+      statistics: descriptive,
+      correlationMatrix,
+      probabilities,
+      regression: advancedAnalysis?.regression || null,
+      weightedIndex: advancedAnalysis?.weightedIndex || null,
+      mcda: advancedAnalysis?.mcda || null,
+      insights,
+      impactAnalysis,
+      problemIdentification,
+      summary,
+      generatedAt: new Date().toISOString()
+    };
+  }
+
+  generateSummary(descriptive, correlationMatrix, advancedAnalysis, insights) {
+    const parts = [];
+    if (descriptive && descriptive.productivity_score) {
+      const avg = descriptive.productivity_score.mean;
+      parts.push(`The dataset shows an average productivity score of ${avg != null ? avg.toFixed(2) : 'N/A'}.`);
+    }
+    if (correlationMatrix && correlationMatrix.productivity_score) {
+      const corr = correlationMatrix.productivity_score;
+      let strongest = { field: '', val: 0 };
+      for (const field in corr) {
+        if (field === 'productivity_score') continue;
+        if (Math.abs(corr[field]) > Math.abs(strongest.val)) {
+          strongest = { field, val: corr[field] };
+        }
+      }
+      if (strongest.field) {
+        const dir = strongest.val > 0 ? 'positive' : 'negative';
+        parts.push(`The strongest relationship identified is between ${this.formatFieldName(strongest.field)} and productivity (${dir} correlation of ${strongest.val.toFixed(2)}).`);
+      }
+    }
+    if (advancedAnalysis && advancedAnalysis.regression) {
+      parts.push(`Regression analysis yields the equation: ${advancedAnalysis.regression.equation}.`);
+    }
+    if (insights && insights.length > 0) {
+      parts.push(insights[0]);
+    }
+    return parts.length > 0 ? parts.join(' ') : 'Comprehensive analysis completed.';
+  }
+
+  formatFieldName(field) {
+    return field.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   }
 
   async getReports(req, res) {
@@ -46,9 +113,8 @@ class ReportController {
       const { reportId } = req.params;
       const { Report } = require('../models');
       const report = await Report.findByPk(reportId);
-      
+
       if (!report) return res.status(404).json({ error: 'Report not found' });
-      // Security: Check if user owns the report
       if (report.user_id !== req.user.id) return res.status(403).json({ error: 'Unauthorized' });
 
       const absolutePath = path.resolve(report.report_path);

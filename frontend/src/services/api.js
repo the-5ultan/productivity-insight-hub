@@ -67,6 +67,8 @@ export const analysisAPI = {
 
 export const reportAPI = {
   getAll: () => api.get('/reports'),
+  generatePDF: (datasetId) => api.post(`/reports/pdf/${datasetId}`, {}, { responseType: 'blob' }),
+  generateExcel: (datasetId) => api.post(`/reports/excel/${datasetId}`, {}, { responseType: 'blob' }),
   download: (id) => api.get(`/reports/download/${id}`, { responseType: 'blob' }),
 };
 
