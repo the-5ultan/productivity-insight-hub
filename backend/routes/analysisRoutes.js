@@ -15,5 +15,6 @@ router.post('/run', authMiddleware, (req, res) => {
   AnalysisController.analyze(req, res);
 });
 router.post('/compare', authMiddleware, (req, res) => AnalysisController.compare(req, res));
+router.post('/compare-multi', authMiddleware, (req, res) => AnalysisController.compareMulti(req, res));
 
 module.exports = router;

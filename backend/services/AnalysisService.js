@@ -213,6 +213,59 @@ class AnalysisService {
     };
   }
 
+  async compareMultipleDatasets(datasetIds) {
+    const datasets = await Promise.all(
+      datasetIds.map(id => Dataset.findByPk(id, { include: [DatasetRecord] }))
+    );
+
+    for (const ds of datasets) {
+      if (!ds) throw new Error('Dataset not found');
+      if (ds.DatasetRecords.length === 0) throw new Error(`Dataset "${ds.dataset_name}" contains no records`);
+    }
+
+    const numericFields = this.getNumericFields();
+
+    // Per-dataset full analysis
+    const perDatasetStats = datasets.map(ds => {
+      const records = ds.DatasetRecords;
+      const stats = this.performFullAnalysis(records);
+      const impact = this.performImpactAnalysis(records);
+      const advanced = this.performAdvancedAnalysis(records);
+      return {
+        id: ds.id,
+        name: ds.dataset_name,
+        recordCount: records.length,
+        ...stats,
+        impactAnalysis: impact,
+        advancedAnalysis: advanced
+      };
+    });
+
+    // Cross-dataset correlation: compare each dataset's field-mean profile
+    const crossCorrelation = {};
+    const dsIds = datasets.map(d => d.id);
+    dsIds.forEach(id1 => {
+      crossCorrelation[id1] = {};
+      dsIds.forEach(id2 => {
+        if (id1 === id2) {
+          crossCorrelation[id1][id2] = 1;
+        } else {
+          const ds1 = perDatasetStats.find(d => d.id === id1);
+          const ds2 = perDatasetStats.find(d => d.id === id2);
+          const vals1 = numericFields.map(f => ds1.descriptive[f]?.mean ?? 0);
+          const vals2 = numericFields.map(f => ds2.descriptive[f]?.mean ?? 0);
+          crossCorrelation[id1][id2] = StatisticsEngine.calculateCorrelation(vals1, vals2);
+        }
+      });
+    });
+
+    return {
+      datasets: perDatasetStats,
+      crossCorrelation,
+      commonFields: numericFields
+    };
+  }
+
   formatFieldName(field) {
     return field.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }

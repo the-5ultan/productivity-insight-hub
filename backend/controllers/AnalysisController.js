@@ -23,6 +23,19 @@ class AnalysisController {
     }
   }
 
+  async compareMulti(req, res) {
+    try {
+      const { datasetIds } = req.body;
+      if (!datasetIds || !Array.isArray(datasetIds) || datasetIds.length < 2) {
+        return res.status(400).json({ error: 'Provide at least 2 dataset IDs' });
+      }
+      const result = await AnalysisService.compareMultipleDatasets(datasetIds);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
   async predict(req, res) {
     try {
       const prediction = await AnalysisService.predictProductivity(req.body);

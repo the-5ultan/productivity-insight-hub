@@ -63,6 +63,7 @@ export const datasetAPI = {
 export const analysisAPI = {
   run: (data) => api.post('/analysis/run', data),
   getAll: () => api.get('/analysis'),
+  compareMulti: (data) => api.post('/analysis/compare-multi', data),
 };
 
 export const reportAPI = {
