@@ -7,10 +7,41 @@ const api = axios.create({
 // Add interceptor for auth token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
+  console.log(`[Request Interceptor] URL: ${config.url}, Token exists: ${!!token}`);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log(`[Request Interceptor] Authorization Header set: Bearer ${token.substring(0, 15)}...`);
+  } else {
+    console.log(`[Request Interceptor] No token found in localStorage`);
   }
   return config;
+}, (error) => {
+  console.error('[Request Interceptor Error]', error);
+  return Promise.reject(error);
+});
+
+api.interceptors.response.use((response) => {
+  return response;
+}, (error) => {
+  console.error(`[Response Interceptor Error] URL: ${error.config?.url}, Status: ${error.response?.status}, Error:`, error.response?.data || error.message);
+  
+  if (error.response && error.response.status === 401) {
+    console.warn('[Response Interceptor] 401 Unauthorized encountered. Clearing session and redirecting to login.');
+    // Only redirect if we were previously logged in or have tokens to clear
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    
+    if (token || user) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      
+      // Redirect to home page with expired flag
+      window.location.href = '/?expired=true';
+    }
+  }
+  return Promise.reject(error);
 });
 
 export const authAPI = {

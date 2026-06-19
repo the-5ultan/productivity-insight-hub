@@ -10,6 +10,10 @@ router.post('/predict', (req, res) => AnalysisController.predict(req, res));
 
 // Protected routes
 router.get('/analyze/:datasetId', authMiddleware, (req, res) => AnalysisController.analyze(req, res));
+router.post('/run', authMiddleware, (req, res) => {
+  console.log("Analysis request received");
+  AnalysisController.analyze(req, res);
+});
 router.post('/compare', authMiddleware, (req, res) => AnalysisController.compare(req, res));
 
 module.exports = router;

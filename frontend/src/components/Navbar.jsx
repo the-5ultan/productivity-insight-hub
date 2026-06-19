@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut, Settings, ChevronDown } from 'lucide-react';
 import AuthModal from './AuthModal';
 import { useAuth } from '../context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuth();
@@ -28,6 +30,16 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('expired') === 'true') {
+      setSessionExpired(true);
+      setIsAuthOpen(true);
+      // Clean up the URL parameters so the warning doesn't show up again on refresh
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
   const handleLogout = () => {
     logout();
     setShowDropdown(false);
@@ -44,6 +56,34 @@ const Navbar = () => {
 
   return (
     <>
+      <AnimatePresence>
+        {sessionExpired && (
+          <motion.div
+            initial={{ opacity: 0, y: -100, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -100, x: '-50%' }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed top-6 left-1/2 z-[100] w-[90%] max-w-md bg-red-950/20 border border-red-500/20 backdrop-blur-2xl px-6 py-4 rounded-[2rem] flex items-center justify-between shadow-2xl"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+                <span className="text-xs">⚠️</span>
+              </div>
+              <div className="text-left">
+                <div className="text-[12px] font-bold text-white uppercase tracking-wider">Session Expired</div>
+                <div className="text-[11px] text-white/50">Please log in again to continue your research.</div>
+              </div>
+            </div>
+            <button 
+              onClick={() => setSessionExpired(false)}
+              className="text-[10px] font-bold uppercase tracking-widest text-red-400/60 hover:text-red-300 transition-colors pl-4"
+            >
+              Dismiss
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'bg-black/40 backdrop-blur-2xl border-b border-white/5 py-3' : 'bg-transparent py-8'}`}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link to={isAuthenticated ? "/dashboard" : "/"} className="text-xl font-serif font-medium tracking-tight text-white flex items-center gap-2.5 group">

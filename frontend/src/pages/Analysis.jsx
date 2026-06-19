@@ -8,17 +8,29 @@ const Analysis = () => {
   const [selectedDataset, setSelectedDataset] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [results, setResults] = useState(null);
+  const [loadingDatasets, setLoadingDatasets] = useState(true);
 
   useEffect(() => {
     fetchDatasets();
   }, []);
 
   const fetchDatasets = async () => {
+    setLoadingDatasets(true);
     try {
       const response = await datasetAPI.getAll();
-      setDatasets(response.data);
+      if (Array.isArray(response.data)) {
+        setDatasets(response.data);
+      } else if (Array.isArray(response.data?.data)) {
+        setDatasets(response.data.data);
+      } else {
+        console.warn('Unexpected API response format:', response.data);
+        setDatasets([]);
+      }
     } catch (error) {
       console.error('Error fetching datasets:', error);
+      setDatasets([]);
+    } finally {
+      setLoadingDatasets(false);
     }
   };
 
@@ -26,6 +38,7 @@ const Analysis = () => {
     if (!selectedDataset) return;
     setAnalyzing(true);
     try {
+      console.log("Calling analysis endpoint:", '/analysis/run');
       const response = await analysisAPI.run({ datasetId: selectedDataset });
       setResults(response.data);
     } catch (error) {
@@ -35,28 +48,66 @@ const Analysis = () => {
     }
   };
 
+  const selectedDs = datasets.find(ds => ds.id === selectedDataset);
+
   return (
     <div className="space-y-10 pb-20">
-      <div className="glass-card flex flex-col md:flex-row items-center justify-between gap-6 border-white/10 bg-white/5">
-        <div>
+      <div className="glass-card border-white/10 bg-white/5">
+        <div className="mb-8">
           <h2 className="text-2xl font-serif text-white mb-1">Statistical Analysis Engine</h2>
           <p className="text-sm text-white/40 font-light tracking-wide">Select a research dataset to run comprehensive productivity modeling.</p>
         </div>
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <select 
-            value={selectedDataset}
-            onChange={(e) => setSelectedDataset(e.target.value)}
-            className="flex-1 md:w-72 bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-white/30 transition-all appearance-none cursor-pointer"
-          >
-            <option value="" className="bg-black">Select Dataset...</option>
+
+        {loadingDatasets ? (
+          <div className="flex items-center gap-3 text-white/40 py-4">
+            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            <span className="text-sm">Loading datasets...</span>
+          </div>
+        ) : datasets.length === 0 ? (
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center mb-6">
+            <p className="text-white/40 text-sm mb-2">No datasets available.</p>
+            <p className="text-white/20 text-xs">Upload a dataset from the Datasets page first.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             {datasets.map(ds => (
-              <option key={ds.id} value={ds.id} className="bg-black">{ds.dataset_name}</option>
+              <div
+                key={ds.id}
+                onClick={() => setSelectedDataset(ds.id)}
+                className={`rounded-2xl border p-5 cursor-pointer transition-all duration-300 ${
+                  selectedDataset === ds.id
+                    ? 'bg-white/10 border-white/30 shadow-lg'
+                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                }`}
+              >
+                <div className="text-white font-medium text-sm mb-1 truncate">
+                  {ds.dataset_name}
+                </div>
+                {ds.description && (
+                  <div className="text-white/30 text-xs font-light truncate">
+                    {ds.description}
+                  </div>
+                )}
+                {selectedDataset === ds.id && (
+                  <div className="mt-3 text-[10px] font-bold uppercase tracking-widest text-white/50">
+                    Selected
+                  </div>
+                )}
+              </div>
             ))}
-          </select>
-          <button 
+          </div>
+        )}
+
+        <div className="flex items-center justify-between gap-4">
+          {selectedDs && (
+            <div className="text-xs text-white/30 font-light">
+              Selected: <span className="text-white/60 font-medium">{selectedDs.dataset_name}</span>
+            </div>
+          )}
+          <button
             onClick={runAnalysis}
             disabled={analyzing || !selectedDataset}
-            className="btn-primary flex items-center space-x-3 px-10 py-4 disabled:opacity-40 tracking-widest uppercase text-[12px] font-bold"
+            className="btn-primary flex items-center space-x-3 px-10 py-4 disabled:opacity-40 tracking-widest uppercase text-[12px] font-bold ml-auto"
           >
             {analyzing ? (
               <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />

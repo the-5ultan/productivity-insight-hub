@@ -3,7 +3,8 @@ const AnalysisService = require('../services/AnalysisService');
 class AnalysisController {
   async analyze(req, res) {
     try {
-      const { datasetId } = req.params;
+      const datasetId = req.params.datasetId || req.body.datasetId;
+      console.log("Running analysis for dataset:", datasetId);
       const user_id = req.user ? req.user.id : null;
       const result = await AnalysisService.analyzeDataset(datasetId, user_id);
       res.json(result);

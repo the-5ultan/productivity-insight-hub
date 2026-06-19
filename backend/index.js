@@ -57,6 +57,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/datasets', datasetRoutes);
 app.use('/api/analysis', analysisRoutes);
+console.log("Analysis routes loaded");
 app.use('/api/reports', reportRoutes);
 app.use('/api/admin', adminRoutes);
 

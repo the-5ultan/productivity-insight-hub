@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Database, Trash2, FileText, Plus, X } from 'lucide-react';
+import { Upload, Database, Trash2, FileText, Plus, X, CheckCircle2 } from 'lucide-react';
 import { datasetAPI } from '../services/api';
 
 const Datasets = () => {

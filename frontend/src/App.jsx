@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Navbar from './components/Navbar';
+import ErrorBoundary from './components/ErrorBoundary';
 import LandingPage from './pages/LandingPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
@@ -70,26 +71,26 @@ const AppContent = () => {
       <Navbar />
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<ErrorBoundary name="Landing Page"><LandingPage /></ErrorBoundary>} />
         <Route path="/login" element={<div className="pt-32 text-center text-primary-accent">Login Page (Coming Soon)</div>} />
         <Route path="/register" element={<div className="pt-32 text-center text-primary-accent">Register Page (Coming Soon)</div>} />
         <Route path="/auth-success" element={<AuthSuccess />} />
         
         {/* Protected Dashboard Routes */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="datasets" element={<Datasets />} />
-          <Route path="analysis" element={<Analysis />} />
-          <Route path="visuals" element={<Visualizations />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="admin" element={<AdminDashboard />} />
-          <Route path="settings" element={<SettingsPage />} />
+        <Route path="/dashboard" element={<ErrorBoundary name="Dashboard Layout"><DashboardLayout /></ErrorBoundary>}>
+          <Route index element={<ErrorBoundary name="Dashboard"><Dashboard /></ErrorBoundary>} />
+          <Route path="datasets" element={<ErrorBoundary name="Datasets"><Datasets /></ErrorBoundary>} />
+          <Route path="analysis" element={<ErrorBoundary name="Analysis"><Analysis /></ErrorBoundary>} />
+          <Route path="visuals" element={<ErrorBoundary name="Visualizations"><Visualizations /></ErrorBoundary>} />
+          <Route path="reports" element={<ErrorBoundary name="Reports"><Reports /></ErrorBoundary>} />
+          <Route path="admin" element={<ErrorBoundary name="Admin Dashboard"><AdminDashboard /></ErrorBoundary>} />
+          <Route path="settings" element={<ErrorBoundary name="Settings"><SettingsPage /></ErrorBoundary>} />
         </Route>
 
         {/* Direct Access Routes (Alternative to Sidebar) */}
-        <Route path="/analysis" element={<div className="pt-32 px-10"><Analysis /></div>} />
-        <Route path="/datasets" element={<div className="pt-32 px-10"><Datasets /></div>} />
-        <Route path="/settings" element={<div className="pt-32 px-10"><SettingsPage /></div>} />
+        <Route path="/analysis" element={<div className="pt-32 px-10"><ErrorBoundary name="Analysis"><Analysis /></ErrorBoundary></div>} />
+        <Route path="/datasets" element={<div className="pt-32 px-10"><ErrorBoundary name="Datasets"><Datasets /></ErrorBoundary></div>} />
+        <Route path="/settings" element={<div className="pt-32 px-10"><ErrorBoundary name="Settings"><SettingsPage /></ErrorBoundary></div>} />
       </Routes>
     </div>
   );

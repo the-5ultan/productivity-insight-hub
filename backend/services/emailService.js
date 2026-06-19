@@ -8,15 +8,19 @@ const sendEmail = async (to, subject, html) => {
     html
   };
 
+  console.log(`[Email Service] Attempting to send email. Sender: ${mailOptions.from}, Recipient: ${to}, Subject: "${subject}"`);
   try {
-    await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[Email Service] Successful send response for email to ${to}:`, info);
+    return info;
   } catch (error) {
-    console.error('Email sending failed:', error);
+    console.error(`[Email Service] Failed send response for email to ${to}:`, error);
     throw new Error('Failed to send email');
   }
 };
 
 const sendOtpEmail = async (email, otp) => {
+  console.log(`[Email Service] OTP generated: ${otp} for email: ${email}`);
   const subject = 'Your Techlytics Verification Code';
   const html = `
     <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
