@@ -40,6 +40,7 @@ const Analysis = () => {
     try {
       console.log("Calling analysis endpoint:", '/analysis/run');
       const response = await analysisAPI.run({ datasetId: selectedDataset });
+      console.log("Analysis API Response:", response.data);
       setResults(response.data);
     } catch (error) {
       alert('Analysis failed');
@@ -150,16 +151,16 @@ const Analysis = () => {
                 
                 <div className="bg-white/5 border border-white/5 rounded-3xl p-8 space-y-6">
                   <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/20 block">Conflicting Variables</span>
-                  {results.stats.problemIdentification.conflictingVariables.map((v, i) => (
+                  {Array.isArray(results.stats.problemIdentification.conflictingVariables) ? results.stats.problemIdentification.conflictingVariables.map((v, i) => (
                     <div key={i} className="space-y-2 border-l-2 border-white/10 pl-6">
                       <div className="flex gap-2">
-                        {v.variables.map(varName => (
+                        {Array.isArray(v.variables) ? v.variables.map(varName => (
                           <span key={varName} className="text-[10px] px-2 py-0.5 bg-white/5 rounded-full text-white/40">{varName}</span>
-                        ))}
+                        )) : null}
                       </div>
                       <p className="text-sm text-white/60 font-light">{v.conflict}</p>
                     </div>
-                  ))}
+                  )) : <p className="text-sm text-white/30 italic">No conflicting variables identified</p>}
                 </div>
               </div>
             </div>
@@ -172,11 +173,11 @@ const Analysis = () => {
                   <h3 className="font-bold uppercase text-[10px] tracking-[0.3em]">Insights Engine</h3>
                 </div>
                 <div className="space-y-4">
-                  {results.stats.insights.slice(0, 2).map((insight, i) => (
+                  {Array.isArray(results.stats.insights) ? results.stats.insights.slice(0, 2).map((insight, i) => (
                     <p key={i} className="text-lg font-serif italic text-white/80 leading-snug">
                       "{insight}"
                     </p>
-                  ))}
+                  )) : <p className="text-sm text-white/30 italic">No insights available</p>}
                 </div>
               </div>
 
@@ -186,12 +187,12 @@ const Analysis = () => {
                   <h3 className="font-bold uppercase text-[10px] tracking-[0.3em]">Mean Productivity</h3>
                 </div>
                 <p className="text-7xl font-serif text-white mb-4">
-                  {(results.stats.descriptive.productivity_score.mean * 10).toFixed(0)}<span className="text-3xl text-white/20">%</span>
+                  {results.stats.descriptive.productivity_score.mean != null ? (results.stats.descriptive.productivity_score.mean * 10).toFixed(0) : "N/A"}<span className="text-3xl text-white/20">%</span>
                 </p>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
-                    animate={{ width: `${results.stats.descriptive.productivity_score.mean * 10}%` }}
+                    animate={{ width: `${results.stats.descriptive.productivity_score.mean != null ? results.stats.descriptive.productivity_score.mean * 10 : 0}%` }}
                     transition={{ duration: 1.5, ease: "easeOut" }}
                     className="h-full bg-green-400/40" 
                   />
@@ -204,7 +205,7 @@ const Analysis = () => {
                   <h3 className="font-bold uppercase text-[10px] tracking-[0.3em]">Peak Probability</h3>
                 </div>
                 <p className="text-7xl font-serif text-white mb-4">
-                  {(results.stats.probabilities.highProductivity * 100).toFixed(0)}<span className="text-3xl text-white/20">%</span>
+                  {results.stats.probabilities.highProductivity != null ? (results.stats.probabilities.highProductivity * 100).toFixed(0) : "N/A"}<span className="text-3xl text-white/20">%</span>
                 </p>
                 <p className="text-xs text-white/30 font-light leading-relaxed">
                   Mathematical probability of reaching high productivity (score ≥ 7) based on usage trends.
@@ -236,16 +237,16 @@ const Analysis = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
-                      {results.stats.impactAnalysis.comparisons.map((c, i) => (
+                      {Array.isArray(results.stats.impactAnalysis.comparisons) ? results.stats.impactAnalysis.comparisons.map((c, i) => (
                         <tr key={i} className="text-sm font-light text-white/70">
                           <td className="px-8 py-5">{c.variable}</td>
-                          <td className="px-8 py-5">{c.before.toFixed(3)}</td>
-                          <td className="px-8 py-5">{c.after.toFixed(3)}</td>
-                          <td className={`px-8 py-5 text-right font-medium ${c.change > 0 ? 'text-green-400/60' : 'text-red-400/60'}`}>
-                            {c.change > 0 ? '+' : ''}{c.change.toFixed(3)}
+                          <td className="px-8 py-5">{c.before != null ? Number(c.before).toFixed(3) : "N/A"}</td>
+                          <td className="px-8 py-5">{c.after != null ? Number(c.after).toFixed(3) : "N/A"}</td>
+                          <td className={`px-8 py-5 text-right font-medium ${c.change != null && c.change > 0 ? 'text-green-400/60' : 'text-red-400/60'}`}>
+                            {c.change != null && c.change > 0 ? '+' : ''}{c.change != null ? Number(c.change).toFixed(3) : "N/A"}
                           </td>
                         </tr>
-                      ))}
+                      )) : <tr><td colSpan="4" className="px-8 py-5 text-sm text-white/30 italic">Insufficient data for impact analysis</td></tr>}
                     </tbody>
                   </table>
                 </div>
@@ -259,6 +260,7 @@ const Analysis = () => {
                   <BarChart size={20} className="text-white/40" />
                   <h3 className="text-xl font-serif text-white">Regression Prediction</h3>
                 </div>
+                {results.stats.advancedAnalysis.regression ? <>
                 <div className="p-8 rounded-[2rem] bg-white/5 border border-white/5 mb-6 text-center">
                   <div className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/20 mb-4">Regression Equation</div>
                   <p className="text-4xl font-serif text-white">{results.stats.advancedAnalysis.regression.equation}</p>
@@ -266,6 +268,7 @@ const Analysis = () => {
                 <p className="text-sm text-white/40 font-light leading-relaxed">
                   Predicting <span className="text-white">{results.stats.advancedAnalysis.regression.dependent}</span> based on <span className="text-white">{results.stats.advancedAnalysis.regression.independent}</span> trends using a linear modeling approach.
                 </p>
+                </> : <p className="text-sm text-white/30 italic">Regression data not available</p>}
               </div>
 
               <div className="glass-card bg-white/[0.02] border-white/5">
@@ -277,19 +280,19 @@ const Analysis = () => {
                   <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20 block mb-2">Weighted Index</span>
                     <div className="flex items-end gap-2">
-                       <p className="text-2xl font-serif text-white">{results.stats.advancedAnalysis.weightedIndex.average.toFixed(2)}</p>
+                       <p className="text-2xl font-serif text-white">{results.stats.advancedAnalysis.weightedIndex.average != null ? Number(results.stats.advancedAnalysis.weightedIndex.average).toFixed(2) : "N/A"}</p>
                        <span className="text-[10px] text-white/40 mb-1">Composite Score</span>
                     </div>
                   </div>
                   <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20 block mb-2">MCDA Top Students</span>
                     <div className="flex gap-4">
-                      {results.stats.advancedAnalysis.mcda.topPerformers.map((p, i) => (
+                      {Array.isArray(results.stats.advancedAnalysis.mcda.topPerformers) ? results.stats.advancedAnalysis.mcda.topPerformers.map((p, i) => (
                         <div key={i} className="flex-1 text-center py-2 bg-white/5 rounded-xl border border-white/5">
                            <div className="text-[9px] text-white/30 font-bold mb-1">ID: {p.studentId}</div>
-                           <div className="text-sm text-white font-medium">{p.score.toFixed(1)}</div>
+                           <div className="text-sm text-white font-medium">{p.score != null ? Number(p.score).toFixed(1) : "N/A"}</div>
                         </div>
-                      ))}
+                      )) : <p className="text-sm text-white/30 italic">No performers data</p>}
                     </div>
                   </div>
                 </div>

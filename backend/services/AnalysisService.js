@@ -47,8 +47,12 @@ class AnalysisService {
     };
   }
 
+  getNumericFields() {
+    return ['screen_time', 'social_media_usage', 'study_time', 'sleep_duration', 'apps_used', 'productivity_score'];
+  }
+
   performFullAnalysis(records) {
-    const fields = ['screen_time', 'social_media_usage', 'study_time', 'sleep_duration', 'apps_used', 'productivity_score'];
+    const fields = this.getNumericFields();
     const descriptive = {};
 
     fields.forEach(field => {
@@ -139,11 +143,14 @@ class AnalysisService {
     const comparisons = [];
     for (const field in originalCorr) {
       if (field === 'social_media_usage' || field === 'productivity_score') continue;
+      if (reducedCorr[field] == null) continue;
+      const before = originalCorr[field];
+      const after = reducedCorr[field];
       comparisons.push({
         variable: this.formatFieldName(field),
-        before: originalCorr[field],
-        after: reducedCorr[field],
-        change: reducedCorr[field] - originalCorr[field]
+        before: before != null && isFinite(before) ? before : 0,
+        after: after != null && isFinite(after) ? after : 0,
+        change: after - before
       });
     }
 
@@ -155,7 +162,8 @@ class AnalysisService {
   }
 
   calculateTargetCorrelations(records, targetField) {
-    const fields = Object.keys(records[0]);
+    const numericFields = this.getNumericFields();
+    const fields = Object.keys(records[0]).filter(f => numericFields.includes(f));
     const results = {};
     fields.forEach(field => {
       results[field] = StatisticsEngine.calculateCorrelation(

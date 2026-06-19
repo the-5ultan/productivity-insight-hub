@@ -22,9 +22,11 @@ const Visualizations = () => {
   const fetchDatasets = async () => {
     try {
       const response = await datasetAPI.getAll();
-      setDatasets(response.data);
-      if (response.data.length > 0) {
-        handleDatasetSelect(response.data[0].id);
+      const data = Array.isArray(response.data) ? response.data : Array.isArray(response.data?.data) ? response.data.data : [];
+      console.log("Fetched datasets:", data);
+      setDatasets(data);
+      if (data.length > 0) {
+        handleDatasetSelect(data[0].id);
       }
     } catch (error) {
       console.error('Error fetching datasets:', error);
@@ -34,11 +36,14 @@ const Visualizations = () => {
   const handleDatasetSelect = async (id) => {
     setLoading(true);
     try {
+      console.log("Running analysis for dataset:", id);
       const response = await analysisAPI.run({ datasetId: id });
+      console.log("Analysis result:", response.data);
       setSelectedDataset(id);
       setAnalysisData(response.data.stats);
     } catch (error) {
       console.error('Error running analysis:', error);
+      setAnalysisData(null);
     } finally {
       setLoading(false);
     }
@@ -47,19 +52,21 @@ const Visualizations = () => {
   if (loading) return <div className="pt-32 text-center text-primary-accent italic">Analyzing Data...</div>;
 
   const getBarData = () => {
-    if (!analysisData) return [];
+    if (!analysisData?.descriptive) return [];
+    console.log("Bar chart data:", analysisData.descriptive);
     return Object.keys(analysisData.descriptive).map(key => ({
       name: key.replace('_', ' '),
-      mean: analysisData.descriptive[key].mean.toFixed(2)
+      mean: analysisData.descriptive[key]?.mean != null ? Number(analysisData.descriptive[key].mean).toFixed(2) : "0.00"
     }));
   };
 
   const getCorrelationData = () => {
-    if (!analysisData) return [];
+    if (!analysisData?.correlationMatrix?.productivity_score) return [];
     const prodCorr = analysisData.correlationMatrix.productivity_score;
+    console.log("Correlation data:", prodCorr);
     return Object.keys(prodCorr).filter(k => k !== 'productivity_score').map(k => ({
       name: k.replace('_', ' '),
-      correlation: prodCorr[k].toFixed(2)
+      correlation: prodCorr[k] != null ? Number(prodCorr[k]).toFixed(2) : "0.00"
     }));
   };
 
@@ -67,14 +74,18 @@ const Visualizations = () => {
     <div className="space-y-8 pb-12">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Data Visualizations</h2>
+        {loading ? (
+          <p className="text-sm text-primary-accent italic">Loading...</p>
+        ) : (
         <select 
           onChange={(e) => handleDatasetSelect(e.target.value)}
           className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary-accent"
         >
-          {datasets.map(ds => (
+          {Array.isArray(datasets) && datasets.map(ds => (
             <option key={ds.id} value={ds.id}>{ds.dataset_name}</option>
           ))}
         </select>
+        )}
       </div>
 
       {!analysisData ? (
@@ -90,6 +101,7 @@ const Visualizations = () => {
               <h3 className="text-lg">Average Metrics</h3>
             </div>
             <div className="h-80 w-full">
+              {getBarData().length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={getBarData()}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
@@ -102,6 +114,7 @@ const Visualizations = () => {
                   <Bar dataKey="mean" fill="#FFFFFF" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              ) : <div className="flex items-center justify-center h-full text-white/30 italic">No metric data available</div>}
             </div>
           </div>
 
@@ -112,6 +125,7 @@ const Visualizations = () => {
               <h3 className="text-lg">Productivity Correlations</h3>
             </div>
             <div className="h-80 w-full">
+              {getCorrelationData().length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={getCorrelationData()} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
@@ -127,6 +141,7 @@ const Visualizations = () => {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              ) : <div className="flex items-center justify-center h-full text-white/30 italic">No correlation data available</div>}
             </div>
           </div>
 
@@ -138,7 +153,7 @@ const Visualizations = () => {
             </div>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-4">
-                {analysisData.conclusions.map((c, i) => (
+                {(analysisData.insights && Array.isArray(analysisData.insights) ? analysisData.insights : []).map((c, i) => (
                   <div key={i} className="flex items-start space-x-3 p-4 bg-white/5 rounded-xl border border-white/5">
                     <div className="mt-1 w-2 h-2 rounded-full bg-primary-accent" />
                     <p className="text-sm text-secondary-accent leading-relaxed">{c}</p>
@@ -148,7 +163,7 @@ const Visualizations = () => {
               <div className="p-6 bg-primary-accent/5 rounded-2xl border border-primary-accent/10">
                 <h4 className="text-primary-accent font-bold mb-2 uppercase text-xs tracking-widest">Key Probability</h4>
                 <p className="text-4xl font-bold mb-4">
-                  {(analysisData.probabilities.highProductivity * 100).toFixed(1)}%
+                  {analysisData.probabilities?.highProductivity != null ? (analysisData.probabilities.highProductivity * 100).toFixed(1) : "N/A"}%
                 </p>
                 <p className="text-secondary-accent text-sm italic">
                   Probability of achieving a high productivity score (&gt;7) based on your current behavior patterns.
