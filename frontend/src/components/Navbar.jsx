@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { User, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { User, LogOut, Settings, ChevronDown, Menu, X } from 'lucide-react';
 import AuthModal from './AuthModal';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,8 +10,10 @@ const Navbar = () => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [sessionExpired, setSessionExpired] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -35,24 +37,33 @@ const Navbar = () => {
     if (params.get('expired') === 'true') {
       setSessionExpired(true);
       setIsAuthOpen(true);
-      // Clean up the URL parameters so the warning doesn't show up again on refresh
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location]);
+
   const handleLogout = () => {
     logout();
     setShowDropdown(false);
+    setMobileMenuOpen(false);
     navigate('/');
   };
 
-  const navItems = isAuthenticated ? [
-    { name: 'Dashboard', path: '/dashboard' },
-    { name: 'Analysis', path: '/dashboard/analysis' },
-    { name: 'Datasets', path: '/dashboard/datasets' },
-  ] : [
+  const navItems = [
     { name: 'Home', path: '/' },
+    ...(isAuthenticated ? [
+      { name: 'Dashboard', path: '/dashboard' },
+      { name: 'Analysis', path: '/dashboard/analysis' },
+      { name: 'Datasets', path: '/dashboard/datasets' },
+      { name: 'Visualizations', path: '/dashboard/visuals' },
+      { name: 'Reports', path: '/dashboard/reports' },
+    ] : []),
   ];
+
+  const isActive = (path) => location.pathname === path;
 
   return (
     <>
@@ -67,7 +78,7 @@ const Navbar = () => {
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
-                <span className="text-xs">⚠️</span>
+                <span className="text-xs">⚠</span>
               </div>
               <div className="text-left">
                 <div className="text-[12px] font-bold text-white uppercase tracking-wider">Session Expired</div>
@@ -76,7 +87,7 @@ const Navbar = () => {
             </div>
             <button 
               onClick={() => setSessionExpired(false)}
-              className="text-[10px] font-bold uppercase tracking-widest text-red-400/60 hover:text-red-300 transition-colors pl-4"
+              className="text-[10px] font-bold uppercase tracking-widest text-red-400/60 hover:text-red-300 transition-colors pl-4 whitespace-nowrap"
             >
               Dismiss
             </button>
@@ -84,21 +95,25 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'bg-black/40 backdrop-blur-2xl border-b border-white/5 py-3' : 'bg-transparent py-8'}`}>
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'bg-black/40 backdrop-blur-2xl border-b border-white/5 py-3' : 'bg-transparent py-6 md:py-8'}`}>
+        <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
           <Link to={isAuthenticated ? "/dashboard" : "/"} className="text-xl font-serif font-medium tracking-tight text-white flex items-center gap-2.5 group">
             <div className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-all duration-500">
               <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
             </div>
-            <span className="opacity-90 group-hover:opacity-100 transition-opacity">Techlytics</span>
+            <span className="opacity-90 group-hover:opacity-100 transition-opacity hidden xs:block">Techlytics</span>
+            <span className="opacity-90 group-hover:opacity-100 transition-opacity xs:hidden">T</span>
           </Link>
 
-          <div className="flex items-center space-x-10">
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center space-x-8 lg:space-x-10">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 to={item.path}
-                className="text-[13px] font-semibold tracking-[0.1em] uppercase text-white/50 hover:text-white transition-all duration-300"
+                className={`text-[13px] font-semibold tracking-[0.1em] uppercase transition-all duration-300 ${
+                  isActive(item.path) ? 'text-white' : 'text-white/50 hover:text-white'
+                }`}
               >
                 {item.name}
               </Link>
@@ -108,9 +123,9 @@ const Navbar = () => {
               <div className="relative" ref={dropdownRef}>
                 <button 
                   onClick={() => setShowDropdown(!showDropdown)}
-                  className="flex items-center gap-3 p-1.5 pl-4 pr-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                  className="flex items-center gap-2 lg:gap-3 p-1.5 pl-3 lg:pl-4 pr-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
                 >
-                  <span className="text-[13px] font-semibold text-white/80">{user?.name?.split(' ')[0]}</span>
+                  <span className="text-[13px] font-semibold text-white/80 hidden sm:block">{user?.name?.split(' ')[0]}</span>
                   <div className="w-8 h-8 rounded-full bg-white/10 overflow-hidden border border-white/20">
                     {user?.avatar_url ? (
                       <img src={user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
@@ -124,7 +139,7 @@ const Navbar = () => {
                 </button>
 
                 {showDropdown && (
-                  <div className="absolute top-full right-0 mt-3 w-56 bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl py-2 overflow-hidden backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="absolute top-full right-0 mt-3 w-56 bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl py-2 overflow-hidden backdrop-blur-xl">
                     <div className="px-4 py-3 border-b border-white/5">
                       <div className="text-[13px] font-bold text-white truncate">{user?.name}</div>
                       <div className="text-[11px] text-white/40 truncate">{user?.email}</div>
@@ -164,8 +179,117 @@ const Navbar = () => {
               </div>
             )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex md:hidden items-center space-x-3">
+            {isAuthenticated && (
+              <Link to="/dashboard/settings" className="w-8 h-8 rounded-full bg-white/10 overflow-hidden border border-white/20">
+                {user?.avatar_url ? (
+                  <img src={user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white/40">
+                    <User size={14} />
+                  </div>
+                )}
+              </Link>
+            )}
+            {!isAuthenticated && (
+              <button 
+                onClick={() => setIsAuthOpen(true)}
+                className="btn-primary py-1.5 px-5 text-[12px] tracking-wide cursor-pointer"
+              >
+                Login
+              </button>
+            )}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 text-white/60 hover:text-white transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md md:hidden"
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 z-50 w-72 bg-[#0a0a0a] border-l border-white/10 md:hidden overflow-y-auto"
+            >
+              <div className="p-6 pt-24">
+                {isAuthenticated && (
+                  <div className="mb-8 p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white/10 overflow-hidden border border-white/20 flex-shrink-0">
+                        {user?.avatar_url ? (
+                          <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-white/40">
+                            <User size={18} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[14px] font-bold text-white truncate">{user?.name}</div>
+                        <div className="text-[11px] text-white/40 truncate">{user?.email}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="space-y-1">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`block px-4 py-3 rounded-xl text-[14px] font-semibold transition-all ${
+                        isActive(item.path)
+                          ? 'bg-white/10 text-white'
+                          : 'text-white/50 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+                {isAuthenticated && (
+                  <div className="mt-8 pt-8 border-t border-white/5 space-y-3">
+                    <Link
+                      to="/dashboard/settings"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] text-white/50 hover:text-white hover:bg-white/5 transition-all"
+                    >
+                      <Settings size={18} className="text-white/40" />
+                      Settings
+                    </Link>
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] text-red-400 hover:text-red-300 hover:bg-white/5 transition-all"
+                    >
+                      <LogOut size={18} className="text-red-400/60" />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </>

@@ -180,19 +180,19 @@ const Visualizations = () => {
   const availableVariables = NUMERIC_FIELDS;
 
   return (
-    <div className="space-y-8 pb-12">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Data Visualizations</h2>
+    <div className="space-y-6 md:space-y-8 pb-8 md:pb-12">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <h2 className="text-xl sm:text-2xl font-bold">Data Visualizations</h2>
         {loading ? (
-          <p className="text-sm text-primary-accent italic">Loading...</p>
+          <p className="text-xs sm:text-sm text-primary-accent italic">Loading...</p>
         ) : (
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-white/40">Dataset:</span>
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <span className="text-[10px] sm:text-xs text-white/40 flex-shrink-0">Dataset:</span>
             <select
               value={selectedDataset ?? ''}
               onChange={(e) => handleDatasetSelect(e.target.value)}
-              className="bg-[rgba(20,20,20,0.75)] backdrop-blur-lg border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 appearance-none cursor-pointer"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: '32px' }}
+              className="flex-1 sm:flex-none bg-[rgba(20,20,20,0.75)] backdrop-blur-lg border border-white/15 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-white/30 appearance-none cursor-pointer min-w-0 max-w-full"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', paddingRight: '28px' }}
             >
               {Array.isArray(datasets) && datasets.map(ds => (
                 <option key={ds.id} value={ds.id} className="bg-[#111827] text-white">{ds.dataset_name}</option>
@@ -214,9 +214,9 @@ const Visualizations = () => {
           <p className="text-secondary-accent italic">Upload a dataset to see visualizations.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
           {/* Mean Values Bar Chart */}
-          <div className="glass-card">
+          <div className="glass-card p-4 sm:p-5 md:p-6 lg:p-8">
             <div className="flex items-center space-x-3 mb-6">
               <BarChart3 className="text-primary-accent" size={20} />
               <h3 className="text-lg">Average Metrics</h3>
@@ -240,32 +240,32 @@ const Visualizations = () => {
           </div>
 
           {/* Productivity Correlation Scatter Plot */}
-          <div className="glass-card">
+          <div className="glass-card p-4 sm:p-5 md:p-6 lg:p-8">
             <div className="flex items-center space-x-3 mb-6">
               <TrendingUp className="text-primary-accent" size={20} />
               <h3 className="text-lg">Productivity Correlation</h3>
             </div>
 
             {/* Variable Selectors */}
-            <div className="flex items-center gap-4 mb-6 bg-white/5 rounded-2xl p-4 border border-white/5">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">X:</span>
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 sm:mb-6 bg-white/5 rounded-2xl p-3 sm:p-4 border border-white/5">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/40">X:</span>
                 <select
                   value={xVariable}
                   onChange={(e) => setXVariable(e.target.value)}
-                  className="bg-[rgba(20,20,20,0.75)] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-white/30"
+                  className="bg-[rgba(20,20,20,0.75)] border border-white/10 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs text-white focus:outline-none focus:border-white/30"
                 >
                   {availableVariables.filter(v => v !== yVariable).map(v => (
                     <option key={v} value={v} className="bg-[#111827] text-white">{formatFieldName(v)}</option>
                   ))}
                 </select>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Y:</span>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/40">Y:</span>
                 <select
                   value={yVariable}
                   onChange={(e) => setYVariable(e.target.value)}
-                  className="bg-[rgba(20,20,20,0.75)] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-white/30"
+                  className="bg-[rgba(20,20,20,0.75)] border border-white/10 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs text-white focus:outline-none focus:border-white/30"
                 >
                   {availableVariables.filter(v => v !== xVariable).map(v => (
                     <option key={v} value={v} className="bg-[#111827] text-white">{formatFieldName(v)}</option>
@@ -276,17 +276,17 @@ const Visualizations = () => {
 
             {/* Dataset Info Bar */}
             {analysisData && (
-              <div className="flex items-center justify-between mb-4 bg-white/5 rounded-2xl px-4 py-3 border border-white/5 text-[10px] font-bold uppercase tracking-wider">
-                <span className="text-white/30">
-                  Total Records: <span className="text-white/60">{datasetRecords.length}</span>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-3 sm:mb-4 bg-white/5 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 border border-white/5 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">
+                <span className="text-white/30 whitespace-nowrap">
+                  Records: <span className="text-white/60">{datasetRecords.length}</span>
                 </span>
-                <span className="text-white/30">
-                  Valid Points: <span className="text-white/60">{scatterData.length}</span>
+                <span className="text-white/30 whitespace-nowrap">
+                  Valid: <span className="text-white/60">{scatterData.length}</span>
                 </span>
-                <span className="text-white/30">
+                <span className="text-white/30 whitespace-nowrap">
                   X: <span className="text-white/60">{formatFieldName(xVariable)}</span>
                 </span>
-                <span className="text-white/30">
+                <span className="text-white/30 whitespace-nowrap">
                   Y: <span className="text-white/60">{formatFieldName(yVariable)}</span>
                 </span>
               </div>
@@ -380,26 +380,26 @@ const Visualizations = () => {
                     </span>
                   )}
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4">
                   <div>
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-white/30 block">R Value</span>
-                    <span className="text-lg font-semibold text-white">{regression.r.toFixed(4)}</span>
+                    <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-white/30 block">R</span>
+                    <span className="text-base sm:text-lg font-semibold text-white break-all">{regression.r.toFixed(4)}</span>
                   </div>
                   <div>
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-white/30 block">R²</span>
-                    <span className="text-lg font-semibold text-white">{regression.r2.toFixed(4)}</span>
+                    <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-white/30 block">R²</span>
+                    <span className="text-base sm:text-lg font-semibold text-white break-all">{regression.r2.toFixed(4)}</span>
                   </div>
                   <div>
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-white/30 block">Observations</span>
-                    <span className="text-lg font-semibold text-white">{regression.n}</span>
+                    <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-white/30 block">Obs</span>
+                    <span className="text-base sm:text-lg font-semibold text-white">{regression.n}</span>
                   </div>
                   <div>
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-white/30 block">Slope</span>
-                    <span className="text-lg font-semibold text-white">{regression.m.toFixed(4)}</span>
+                    <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-white/30 block">Slope</span>
+                    <span className="text-base sm:text-lg font-semibold text-white break-all">{regression.m.toFixed(4)}</span>
                   </div>
                   <div>
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-white/30 block">Intercept</span>
-                    <span className="text-lg font-semibold text-white">{regression.b.toFixed(4)}</span>
+                    <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-white/30 block">Intercept</span>
+                    <span className="text-base sm:text-lg font-semibold text-white break-all">{regression.b.toFixed(4)}</span>
                   </div>
                 </div>
                 <div className="pt-2 border-t border-white/5">
@@ -422,13 +422,13 @@ const Visualizations = () => {
           </div>
 
           {/* AI Insights Panel */}
-          <div className="glass-card lg:col-span-2">
-            <div className="flex items-center space-x-3 mb-6">
+          <div className="glass-card lg:col-span-2 p-4 sm:p-5 md:p-6 lg:p-8">
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
               <Activity className="text-primary-accent" size={20} />
               <h3 className="text-lg">AI Insights & Interpretations</h3>
             </div>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
+              <div className="space-y-3 sm:space-y-4">
                 {(analysisData.insights && Array.isArray(analysisData.insights) ? analysisData.insights : []).map((c, i) => (
                   <div key={i} className="flex items-start space-x-3 p-4 bg-white/5 rounded-xl border border-white/5">
                     <div className="mt-1 w-2 h-2 rounded-full bg-primary-accent" />
@@ -436,12 +436,12 @@ const Visualizations = () => {
                   </div>
                 ))}
               </div>
-              <div className="p-6 bg-primary-accent/5 rounded-2xl border border-primary-accent/10">
-                <h4 className="text-primary-accent font-bold mb-2 uppercase text-xs tracking-widest">Key Probability</h4>
-                <p className="text-4xl font-bold mb-4">
+              <div className="p-4 sm:p-5 md:p-6 bg-primary-accent/5 rounded-2xl border border-primary-accent/10">
+                <h4 className="text-primary-accent font-bold mb-2 uppercase text-[10px] sm:text-xs tracking-widest">Key Probability</h4>
+                <p className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">
                   {analysisData.probabilities?.highProductivity != null ? (analysisData.probabilities.highProductivity * 100).toFixed(1) : "N/A"}%
                 </p>
-                <p className="text-secondary-accent text-sm italic">
+                <p className="text-secondary-accent text-xs sm:text-sm italic">
                   Probability of achieving a high productivity score (&gt;7) based on your current behavior patterns.
                 </p>
               </div>

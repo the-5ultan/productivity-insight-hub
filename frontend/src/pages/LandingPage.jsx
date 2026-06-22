@@ -15,7 +15,6 @@ const TypewriterHeadline = () => {
   const [subIndex, setSubIndex] = useState(0);
   const [reverse, setReverse] = useState(false);
 
-  // Typewriter effect logic
   useEffect(() => {
     if (subIndex === messages[index].length + 1 && !reverse) {
       setTimeout(() => setReverse(true), 2500);
@@ -36,9 +35,9 @@ const TypewriterHeadline = () => {
   }, [subIndex, index, reverse]);
 
   return (
-    <h1 className="text-white font-serif font-medium tracking-tight leading-[1.05] min-h-[3.2em] md:min-h-[2.1em] flex flex-col justify-center items-center" 
-        style={{ fontSize: 'clamp(2.5rem, 8vw, 7.5rem)' }}>
-      <span className="block max-w-[15ch] md:max-w-none text-center">
+    <h1 className="text-white font-serif font-medium tracking-tight leading-[1.05] min-h-[2.8em] sm:min-h-[2.4em] md:min-h-[2.1em] flex flex-col justify-center items-center" 
+        style={{ fontSize: 'clamp(1.8rem, 6vw, 4.5rem)' }}>
+      <span className="block max-w-[15ch] md:max-w-none text-center px-2">
         {messages[index].substring(0, subIndex)}
         <span className="inline-block w-[2px] h-[0.9em] bg-white ml-1 animate-pulse" style={{ verticalAlign: 'middle' }} />
       </span>
@@ -60,19 +59,19 @@ const LandingPage = () => {
       title: 'Descriptive Statistics',
       tags: ['Mean', 'Median', 'Variance', 'Standard Deviation'],
       desc: 'Automatically calculate and visualize core statistical measures to understand productivity behavior patterns.',
-      icon: <BarChart3 className="w-6 h-6" />
+      icon: <BarChart3 className="w-5 h-5 md:w-6 md:h-6" />
     },
     {
       title: 'Correlation Analysis',
       tags: ['Heatmaps', 'Relationships', 'Patterns', 'Insights'],
       desc: 'Discover how screen time, social media usage, study time, and sleep duration influence productivity scores.',
-      icon: <Network className="w-6 h-6" />
+      icon: <Network className="w-5 h-5 md:w-6 md:h-6" />
     },
     {
       title: 'Predictive Intelligence',
       tags: ['Probability', 'Prediction', 'AI Insights', 'Research'],
       desc: 'Generate productivity predictions and receive intelligent interpretations of statistical findings.',
-      icon: <Brain className="w-6 h-6" />
+      icon: <Brain className="w-5 h-5 md:w-6 md:h-6" />
     }
   ];
 
@@ -81,21 +80,21 @@ const LandingPage = () => {
       <AnimatedBackground />
 
       {/* Hero Section */}
-      <section className="relative pt-60 pb-40 px-6 z-10">
+      <section className="relative pt-32 sm:pt-40 md:pt-48 lg:pt-56 xl:pt-60 pb-20 sm:pb-28 md:pb-36 lg:pb-40 px-4 sm:px-6 z-10">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="inline-flex items-center space-x-3 px-5 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl mb-14"
+            className="inline-flex items-center space-x-3 px-4 sm:px-5 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl mb-8 sm:mb-10 md:mb-14"
           >
-            <span className="flex h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/60">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-white animate-pulse flex-shrink-0" />
+            <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.3em] uppercase text-white/60">
               Modern AI-Powered Analytics Platform
             </span>
           </motion.div>
 
-          <div className="mb-14">
+          <div className="mb-8 sm:mb-10 md:mb-14">
             <TypewriterHeadline />
           </div>
 
@@ -104,7 +103,7 @@ const LandingPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.5, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="text-lg md:text-2xl text-white/50 max-w-3xl mx-auto mb-20 leading-[1.6] font-light tracking-wide"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/50 max-w-3xl mx-auto mb-12 sm:mb-16 md:mb-20 leading-[1.6] font-light tracking-wide px-2"
           >
             Analyze screen time, social media usage, study habits, and sleep patterns through <span className="text-white italic">advanced statistical analysis</span>, AI-powered interpretations, and predictive modeling for better productivity outcomes.
           </motion.p>
@@ -114,49 +113,49 @@ const LandingPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.8, duration: 1 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-10"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-10"
           >
-            <Link to="/register" className="btn-primary px-14 py-5 text-[15px] tracking-[0.1em] uppercase font-bold">
+            <Link to="/register" className="btn-primary px-8 sm:px-10 md:px-14 py-3 md:py-5 text-[13px] sm:text-[14px] md:text-[15px] tracking-[0.1em] uppercase font-bold w-full sm:w-auto text-center">
               Start Analysis
             </Link>
-            <Link to="/dashboard/reports" className="btn-secondary px-14 py-5 text-[15px] tracking-[0.1em] uppercase font-bold">
+            <Link to="/dashboard/reports" className="btn-secondary px-8 sm:px-10 md:px-14 py-3 md:py-5 text-[13px] sm:text-[14px] md:text-[15px] tracking-[0.1em] uppercase font-bold w-full sm:w-auto text-center">
               View Research
             </Link>
           </motion.div>
 
           {/* Hero Stat Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-44 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mt-20 sm:mt-28 md:mt-36 lg:mt-44 max-w-4xl mx-auto px-2">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              className="glass-card flex flex-col items-center justify-center py-12 relative group bg-white/5 border border-white/10 rounded-[2.5rem]"
+              className="glass-card flex flex-col items-center justify-center py-8 sm:py-10 md:py-12 relative group bg-white/5 border border-white/10 rounded-[2rem] sm:rounded-[2.5rem]"
             >
-              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[2.5rem]" />
-              <div className="text-6xl md:text-7xl font-serif font-medium mb-3 text-white">87%</div>
-              <div className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-bold">Prediction Accuracy</div>
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[2rem] sm:rounded-[2.5rem]" />
+              <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-medium mb-2 md:mb-3 text-white">87%</div>
+              <div className="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/50 font-bold px-4 text-center">Prediction Accuracy</div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="glass-card flex flex-col items-center justify-center py-12 relative group bg-white/5 border border-white/10 rounded-[2.5rem]"
+              className="glass-card flex flex-col items-center justify-center py-8 sm:py-10 md:py-12 relative group bg-white/5 border border-white/10 rounded-[2rem] sm:rounded-[2.5rem]"
             >
-              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[2.5rem]" />
-              <div className="text-6xl md:text-7xl font-serif font-medium mb-3 text-white">10K+</div>
-              <div className="text-[11px] uppercase tracking-[0.3em] text-white/50 font-bold">Analytics Generated</div>
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[2rem] sm:rounded-[2.5rem]" />
+              <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-medium mb-2 md:mb-3 text-white">10K+</div>
+              <div className="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/50 font-bold px-4 text-center">Analytics Generated</div>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Partners Section */}
-      <section className="relative py-24 border-y border-white/5 bg-black/40 backdrop-blur-md px-6 z-10">
-        <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-16 md:gap-32 items-center opacity-40 grayscale hover:grayscale-0 transition-all duration-1000">
+      <section className="relative py-12 sm:py-16 md:py-20 lg:py-24 border-y border-white/5 bg-black/40 backdrop-blur-md px-4 sm:px-6 z-10">
+        <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-8 sm:gap-12 md:gap-16 lg:gap-24 xl:gap-32 items-center opacity-40 grayscale hover:grayscale-0 transition-all duration-1000">
           {partners.map((partner) => (
-            <span key={partner} className="text-xl md:text-2xl font-serif font-medium tracking-tight whitespace-nowrap text-white">
+            <span key={partner} className="text-lg sm:text-xl md:text-2xl font-serif font-medium tracking-tight whitespace-nowrap text-white">
               {partner}
             </span>
           ))}
@@ -164,14 +163,14 @@ const LandingPage = () => {
       </section>
 
       {/* Capabilities Section */}
-      <section id="features" className="relative py-48 px-6 z-10">
+      <section id="features" className="relative py-24 sm:py-32 md:py-40 lg:py-48 px-4 sm:px-6 z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-24 text-center">
+          <div className="mb-16 sm:mb-20 md:mb-24 text-center">
             <motion.span
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-[10px] font-bold tracking-[0.5em] uppercase text-white/40 mb-6 block"
+              className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.5em] uppercase text-white/40 mb-4 sm:mb-6 block"
             >
               Intelligence Platform
             </motion.span>
@@ -180,7 +179,7 @@ const LandingPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 1 }}
-              className="text-6xl md:text-8xl font-serif font-medium tracking-tight mb-8 text-white"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-medium tracking-tight mb-6 sm:mb-8 text-white px-2"
             >
               Analytics <br />
               <span className="italic font-light text-white/60">Reimagined</span>
@@ -190,13 +189,13 @@ const LandingPage = () => {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 1 }}
-              className="text-xl md:text-2xl text-white/50 max-w-2xl mx-auto font-light"
+              className="text-lg sm:text-xl md:text-2xl text-white/50 max-w-2xl mx-auto font-light px-4"
             >
               Powerful statistical tools designed to uncover meaningful relationships between technology usage and productivity outcomes.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
             {capabilities.map((cap, i) => (
               <motion.div
                 key={cap.title}
@@ -204,20 +203,20 @@ const LandingPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.2, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                className="glass-card group hover:translate-y-[-10px] transition-all duration-700 bg-white/5 border border-white/10 rounded-[2.5rem] p-10"
+                className="glass-card group hover:translate-y-[-10px] transition-all duration-700 bg-white/5 border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10"
               >
-                <div className="mb-12 p-4 w-fit rounded-2xl bg-white/5 border border-white/10 text-white group-hover:scale-110 group-hover:bg-white group-hover:text-black transition-all duration-700">
+                <div className="mb-8 sm:mb-10 md:mb-12 p-3 sm:p-4 w-fit rounded-2xl bg-white/5 border border-white/10 text-white group-hover:scale-110 group-hover:bg-white group-hover:text-black transition-all duration-700">
                   {cap.icon}
                 </div>
-                <div className="flex flex-wrap gap-2.5 mb-8">
+                <div className="flex flex-wrap gap-2 mb-6 sm:mb-8">
                   {cap.tags.map(tag => (
-                    <span key={tag} className="text-[10px] font-semibold uppercase tracking-[0.15em] px-3 py-1.5 rounded-full bg-white/5 border border-white/5 text-white/40 group-hover:border-white/20 transition-colors">
+                    <span key={tag} className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.1em] sm:tracking-[0.15em] px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/5 border border-white/5 text-white/40 group-hover:border-white/20 transition-colors">
                       {tag}
                     </span>
                   ))}
                 </div>
-                <h3 className="text-3xl mb-6 font-serif text-white">{cap.title}</h3>
-                <p className="text-white/50 leading-relaxed text-lg font-light">
+                <h3 className="text-2xl sm:text-3xl mb-4 sm:mb-6 font-serif text-white">{cap.title}</h3>
+                <p className="text-white/50 leading-relaxed text-base sm:text-lg font-light">
                   {cap.desc}
                 </p>
               </motion.div>
@@ -227,20 +226,20 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="relative py-24 border-t border-white/5 px-6 z-10 bg-black">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-          <div className="text-3xl font-serif font-medium tracking-tight flex items-center gap-3">
-             <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center">
+      <footer className="relative py-16 sm:py-20 md:py-24 border-t border-white/5 px-4 sm:px-6 z-10 bg-black">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 md:gap-12">
+          <div className="text-2xl sm:text-3xl font-serif font-medium tracking-tight flex items-center gap-3">
+             <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-white/20 flex items-center justify-center flex-shrink-0">
               <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
             </div>
             Techlytics
           </div>
-          <div className="text-[11px] tracking-[0.4em] text-secondary-accent/40 uppercase font-bold text-center md:text-left">
+          <div className="text-[10px] sm:text-[11px] tracking-[0.3em] sm:tracking-[0.4em] text-secondary-accent/40 uppercase font-bold text-center md:text-left">
             © 2026 Transform Digital Behavior Into Productivity Insights
           </div>
-          <div className="flex space-x-10">
-            { socialLinks.map(social => (
-              <a key={social} href="#" className="text-[11px] uppercase tracking-[0.3em] text-secondary-accent hover:text-white transition-colors duration-500 font-bold">
+          <div className="flex space-x-6 sm:space-x-8 md:space-x-10">
+            { ['Twitter', 'LinkedIn', 'Github'].map(social => (
+              <a key={social} href="#" className="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.3em] text-secondary-accent hover:text-white transition-colors duration-500 font-bold">
                 {social}
               </a>
             ))}
@@ -250,7 +249,5 @@ const LandingPage = () => {
     </div>
   );
 };
-
-const socialLinks = ['Twitter', 'LinkedIn', 'Github'];
 
 export default LandingPage;

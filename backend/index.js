@@ -69,9 +69,18 @@ app.get('/', (req, res) => {
 // Centralized Error Handling
 app.use(errorHandler);
 
-// Sync Database
-sequelize.sync({ alter: true })
-  .then(() => {
+// Sync Database (safe mode — no auto-alter to prevent duplicate index accumulation)
+const syncDatabase = async () => {
+  try {
+    // First pass: create tables if they don't exist (no alter)
+    await sequelize.sync();
+
+    // Second pass: optionally alter if DB_ALTER is explicitly enabled
+    if (process.env.DB_ALTER === 'true') {
+      console.log('⚠ DB_ALTER enabled — running alter (development only)');
+      await sequelize.sync({ alter: true });
+    }
+
     console.log('✓ Database Connected');
     
     // Diagnostic Logs
@@ -92,10 +101,12 @@ sequelize.sync({ alter: true })
     } else {
       console.log('⚠ Google OAuth Credentials Missing');
     }
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error('Error syncing database:', err);
-  });
+  }
+};
+
+syncDatabase();
 
 // Port configuration
 const PORT = process.env.PORT || 5000;

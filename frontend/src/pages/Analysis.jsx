@@ -151,12 +151,12 @@ const Analysis = () => {
   }, [comparisonResult]);
 
   return (
-    <div className="space-y-10 pb-20">
+    <div className="space-y-6 md:space-y-8 lg:space-y-10 pb-12 md:pb-16 lg:pb-20">
       {/* Dataset Selector */}
-      <div className="glass-card border-white/10 bg-white/5">
-        <div className="mb-8">
-          <h2 className="text-2xl font-serif text-white mb-1">Statistical Analysis Engine</h2>
-          <p className="text-sm text-white/40 font-light tracking-wide">
+      <div className="glass-card border-white/10 bg-white/5 p-5 sm:p-6 md:p-8 lg:p-10">
+        <div className="mb-6 md:mb-8">
+          <h2 className="text-xl sm:text-2xl font-serif text-white mb-1">Statistical Analysis Engine</h2>
+          <p className="text-xs sm:text-sm text-white/40 font-light tracking-wide">
             {selectedDatasets.length === 0
               ? 'Select one dataset to analyze, or two or more to compare.'
               : selectedDatasets.length === 1
@@ -233,23 +233,23 @@ const Analysis = () => {
         )}
 
         {/* Action buttons */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="text-xs text-white/30 font-light">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="text-[11px] sm:text-xs text-white/30 font-light">
             {selectedDatasets.length > 0 && (
               <span><span className="text-white/60 font-medium">{selectedDatasets.length}</span> dataset{selectedDatasets.length > 1 ? 's' : ''} selected</span>
             )}
           </div>
-          <div className="flex gap-3 ml-auto">
+          <div className="flex gap-2 sm:gap-3">
             {selectedDatasets.length === 1 && (
               <button
                 onClick={runAnalysis}
                 disabled={analyzing}
-                className="btn-primary flex items-center space-x-3 px-8 py-4 disabled:opacity-40 tracking-widest uppercase text-[12px] font-bold"
+                className="btn-primary flex items-center space-x-2 sm:space-x-3 px-5 sm:px-8 py-3 sm:py-4 disabled:opacity-40 tracking-widest uppercase text-[11px] sm:text-[12px] font-bold"
               >
                 {analyzing ? (
-                  <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                  <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
                 ) : (
-                  <Play size={16} fill="currentColor" />
+                  <Play size={14} fill="currentColor" />
                 )}
                 <span>{analyzing ? 'Processing' : 'Analyze'}</span>
               </button>
@@ -258,12 +258,12 @@ const Analysis = () => {
               <button
                 onClick={runComparison}
                 disabled={analyzing}
-                className="btn-primary flex items-center space-x-3 px-8 py-4 disabled:opacity-40 tracking-widest uppercase text-[12px] font-bold"
+                className="btn-primary flex items-center space-x-2 sm:space-x-3 px-5 sm:px-8 py-3 sm:py-4 disabled:opacity-40 tracking-widest uppercase text-[11px] sm:text-[12px] font-bold"
               >
                 {analyzing ? (
-                  <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                  <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
                 ) : (
-                  <GitCompare size={16} />
+                  <GitCompare size={14} />
                 )}
                 <span>{analyzing ? 'Processing' : 'Compare All'}</span>
               </button>
@@ -279,21 +279,21 @@ const Analysis = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-10"
+            className="space-y-6 md:space-y-8 lg:space-y-10"
           >
-            <div className="glass-card bg-white/[0.02] border-white/5">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
-                  <Sigma size={24} className="text-white/60" />
+            <div className="glass-card bg-white/[0.02] border-white/5 p-5 sm:p-6 md:p-8 lg:p-10">
+              <div className="flex items-center gap-3 sm:gap-4 mb-6 md:mb-8">
+                <div className="p-2 sm:p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <Sigma size={20} className="text-white/60" />
                 </div>
-                <h3 className="text-2xl font-serif text-white">Statistics Summary</h3>
+                <h3 className="text-xl sm:text-2xl font-serif text-white">Statistics Summary</h3>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {numericFields.map(field => {
                   const d = stats.descriptive[field];
                   if (!d) return null;
                   return (
-                    <div key={field} className="bg-white/5 border border-white/5 rounded-3xl p-6 space-y-4">
+                    <div key={field} className="bg-white/5 border border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 space-y-3 md:space-y-4">
                       <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/30">{FIELD_LABELS[field] || field}</div>
                       <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
                         <div><span className="text-[9px] font-bold uppercase tracking-wider text-white/20 block">Mean</span><span className="text-white font-medium">{formatStat(d.mean)}</span></div>
@@ -311,14 +311,14 @@ const Analysis = () => {
               </div>
             </div>
 
-            <div className="glass-card bg-white/[0.02] border-white/5">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
-                  <Activity size={24} className="text-white/60" />
+            <div className="glass-card bg-white/[0.02] border-white/5 p-5 sm:p-6 md:p-8 lg:p-10">
+              <div className="flex items-center gap-3 sm:gap-4 mb-6 md:mb-8">
+                <div className="p-2 sm:p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <Activity size={20} className="text-white/60" />
                 </div>
-                <h3 className="text-2xl font-serif text-white">Correlation Analysis</h3>
+                <h3 className="text-xl sm:text-2xl font-serif text-white">Correlation Analysis</h3>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 {CORRELATION_FIELDS.map(({ field, label }) => {
                   const r = stats.correlationMatrix?.productivity_score?.[field];
                   if (r == null) return null;
@@ -391,11 +391,12 @@ const Analysis = () => {
               </div>
             </div>
 
-            <div className="glass-card bg-white/[0.02] border-white/5">
-              <div className="flex items-center gap-4 mb-8"><div className="p-3 rounded-2xl bg-red-400/5 border border-red-400/10 text-red-400/40"><AlertCircle size={24} /></div><h3 className="text-2xl font-serif text-white">Variable Removal Impact</h3></div>
-              <div className="bg-white/5 border border-white/5 rounded-3xl overflow-hidden">
-                <div className="p-8 border-b border-white/5 bg-white/[0.01]"><p className="text-sm font-light text-white/60">Experiment: Removing <span className="text-white font-medium">{stats.impactAnalysis.removedVariable}</span> from the predictive model.</p></div>
-                <div className="overflow-x-auto">
+            <div className="glass-card bg-white/[0.02] border-white/5 p-5 sm:p-6 md:p-8 lg:p-10">
+              <div className="flex items-center gap-3 sm:gap-4 mb-6 md:mb-8"><div className="p-2 sm:p-3 rounded-2xl bg-red-400/5 border border-red-400/10 text-red-400/40"><AlertCircle size={20} /></div><h3 className="text-xl sm:text-2xl font-serif text-white">Variable Removal Impact</h3></div>
+              <div className="bg-white/5 border border-white/5 rounded-2xl sm:rounded-3xl overflow-hidden">
+                <div className="p-4 sm:p-6 md:p-8 border-b border-white/5 bg-white/[0.01]"><p className="text-xs sm:text-sm font-light text-white/60">Experiment: Removing <span className="text-white font-medium">{stats.impactAnalysis.removedVariable}</span> from the predictive model.</p></div>
+                <div className="overflow-x-auto -mx-5 sm:-mx-0">
+                  <div className="inline-block min-w-full align-middle px-5 sm:px-0">
                   <table className="w-full text-left">
                     <thead><tr className="border-b border-white/5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/20"><th className="px-8 py-5">Remaining Variable</th><th className="px-8 py-5">Original Corr</th><th className="px-8 py-5">Post-Removal Corr</th><th className="px-8 py-5 text-right">Net Change</th></tr></thead>
                     <tbody className="divide-y divide-white/5">
@@ -411,6 +412,7 @@ const Analysis = () => {
                   </table>
                 </div>
               </div>
+            </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -448,19 +450,19 @@ const Analysis = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-10"
+            className="space-y-6 md:space-y-8 lg:space-y-10"
           >
             {/* Cross-Dataset Correlation Matrix */}
-            <div className="glass-card bg-white/[0.02] border-white/5">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
-                  <GitCompare size={24} className="text-white/60" />
+            <div className="glass-card bg-white/[0.02] border-white/5 p-5 sm:p-6 md:p-8 lg:p-10">
+              <div className="flex items-center gap-3 sm:gap-4 mb-6 md:mb-8">
+                <div className="p-2 sm:p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <GitCompare size={20} className="text-white/60" />
                 </div>
-                <h3 className="text-2xl font-serif text-white">Cross-Dataset Correlation Matrix</h3>
+                <h3 className="text-xl sm:text-2xl font-serif text-white">Cross-Dataset Correlation Matrix</h3>
               </div>
 
               {strongestPair && (
-                <div className="mb-6 bg-white/5 rounded-2xl p-4 border border-white/5 text-sm">
+                <div className="mb-4 md:mb-6 bg-white/5 rounded-2xl p-3 sm:p-4 border border-white/5 text-xs sm:text-sm">
                   <span className="text-white/40">Strongest relationship: </span>
                   <span className="text-white font-medium">
                     {comparisonResult.datasets.find(d => d.id === strongestPair.id1)?.name}
@@ -524,18 +526,19 @@ const Analysis = () => {
             </div>
 
             {/* Side-by-Side Statistics */}
-            <div className="glass-card bg-white/[0.02] border-white/5">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
-                  <Sigma size={24} className="text-white/60" />
+            <div className="glass-card bg-white/[0.02] border-white/5 p-5 sm:p-6 md:p-8 lg:p-10">
+              <div className="flex items-center gap-3 sm:gap-4 mb-6 md:mb-8">
+                <div className="p-2 sm:p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <Sigma size={20} className="text-white/60" />
                 </div>
-                <h3 className="text-2xl font-serif text-white">Statistics Comparison</h3>
+                <h3 className="text-xl sm:text-2xl font-serif text-white">Statistics Comparison</h3>
               </div>
 
               {comparisonResult.commonFields.map(field => (
-                <div key={field} className="mb-8 last:mb-0">
-                  <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-white/30 mb-4 px-2">{FIELD_LABELS[field] || field}</div>
-                  <div className="overflow-x-auto">
+                <div key={field} className="mb-6 md:mb-8 last:mb-0">
+                  <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/30 mb-3 sm:mb-4 px-1 sm:px-2">{FIELD_LABELS[field] || field}</div>
+                  <div className="overflow-x-auto -mx-5 sm:-mx-0">
+                    <div className="inline-block min-w-full align-middle px-5 sm:px-0">
                     <table className="w-full text-left min-w-[500px]">
                       <thead>
                         <tr className="border-b border-white/5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">
@@ -571,20 +574,21 @@ const Analysis = () => {
                     </table>
                   </div>
                 </div>
+              </div>
               ))}
             </div>
 
             {/* Pairwise Variable Scatter Comparison */}
-            <div className="glass-card bg-white/[0.02] border-white/5">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
-                  <BarChart size={24} className="text-white/60" />
+            <div className="glass-card bg-white/[0.02] border-white/5 p-5 sm:p-6 md:p-8 lg:p-10">
+              <div className="flex items-center gap-3 sm:gap-4 mb-6 md:mb-8">
+                <div className="p-2 sm:p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <BarChart size={20} className="text-white/60" />
                 </div>
-                <h3 className="text-2xl font-serif text-white">Field Mean Comparison</h3>
+                <h3 className="text-xl sm:text-2xl font-serif text-white">Field Mean Comparison</h3>
               </div>
 
-              <div className="flex items-center gap-4 mb-6 bg-white/5 rounded-2xl p-4 border border-white/5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Variable:</span>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4 md:mb-6 bg-white/5 rounded-2xl p-3 sm:p-4 border border-white/5">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/40">Variable:</span>
                 <select
                   value={comparePairVar}
                   onChange={(e) => setComparePairVar(e.target.value)}
@@ -634,16 +638,16 @@ const Analysis = () => {
             </div>
 
             {/* Insights Per Dataset */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
               {comparisonResult.datasets.map(ds => (
-                <div key={ds.id} className="glass-card bg-white/[0.02] border-white/5">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
-                      <Activity size={20} className="text-white/60" />
+                <div key={ds.id} className="glass-card bg-white/[0.02] border-white/5 p-5 sm:p-6 md:p-8">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                    <div className="p-2 sm:p-3 rounded-2xl bg-white/5 border border-white/10 flex-shrink-0">
+                      <Activity size={18} className="text-white/60" />
                     </div>
-                    <div>
-                      <h3 className="text-xl font-serif text-white">{ds.name}</h3>
-                      <p className="text-[10px] text-white/30 font-bold uppercase tracking-wider">{ds.recordCount} records</p>
+                    <div className="min-w-0">
+                      <h3 className="text-lg sm:text-xl font-serif text-white truncate">{ds.name}</h3>
+                      <p className="text-[9px] sm:text-[10px] text-white/30 font-bold uppercase tracking-wider">{ds.recordCount} records</p>
                     </div>
                   </div>
                   <div className="space-y-3">

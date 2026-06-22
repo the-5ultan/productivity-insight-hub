@@ -9,8 +9,7 @@ const UserProfile = sequelize.define('UserProfile', {
   },
   userId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    unique: true
+    allowNull: false
   },
   secondaryEmail: {
     type: DataTypes.STRING,
@@ -56,7 +55,14 @@ const UserProfile = sequelize.define('UserProfile', {
     defaultValue: 0
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  indexes: [
+    {
+      unique: true,
+      fields: ['userId'],
+      name: 'userprofiles_userId_unique'
+    }
+  ]
 });
 
 module.exports = UserProfile;
