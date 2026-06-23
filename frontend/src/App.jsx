@@ -12,6 +12,7 @@ import Reports from './pages/Reports';
 import AdminDashboard from './pages/AdminDashboard';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { API_BASE_URL } from './services/api';
 import SettingsPage from './pages/Settings';
 
 const AuthSuccess = () => {
@@ -29,7 +30,7 @@ const AuthSuccess = () => {
       localStorage.setItem('token', accessToken);
       
       // Fetch user profile to store in AuthContext and localStorage
-      fetch('http://localhost:5000/api/user/profile', {
+      fetch(`${API_BASE_URL}/api/user/profile`, {
         headers: { 'Authorization': `Bearer ${accessToken}` }
       })
       .then(res => res.json())

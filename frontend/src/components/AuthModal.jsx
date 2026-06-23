@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, ArrowRight, CheckCircle2, User, GraduationCap, MapPin, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../services/api';
 
 const AuthModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
@@ -35,7 +36,7 @@ const AuthModal = ({ isOpen, onClose }) => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google';
+    window.location.href = `${API_BASE_URL}/api/auth/google`;
   };
 
   const nextStep = () => setStep(step + 1);
