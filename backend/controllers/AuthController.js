@@ -127,6 +127,38 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
+const resendOtp = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email address is required.' });
+    }
+    if (!validateEmail(email)) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+    }
+
+    console.log(`[AuthController] Resend OTP requested for ${email}`);
+
+    await otpService.invalidateUserOtps(email);
+
+    const user = await User.findOne({ where: { email } });
+    const userId = user ? user.id : null;
+
+    const otp = await otpService.createOtp(email, userId);
+    await emailService.sendOtpEmail(email, otp);
+
+    console.log(`[AuthController] New OTP sent to ${email}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'A new verification code has been sent to your email.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const resetPassword = async (req, res, next) => {
   try {
     const { email, otpCode, newPassword } = req.body;
@@ -156,5 +188,6 @@ module.exports = {
   verifyOtp,
   login,
   forgotPassword,
+  resendOtp,
   resetPassword
 };

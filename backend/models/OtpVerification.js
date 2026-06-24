@@ -31,6 +31,8 @@ const OtpVerification = sequelize.define('OtpVerification', {
     defaultValue: false
   }
 }, {
+  tableName: 'otpverifications',
+  freezeTableName: true,
   timestamps: true
 });
 

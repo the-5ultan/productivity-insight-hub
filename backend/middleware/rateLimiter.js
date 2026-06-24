@@ -18,7 +18,19 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const resendLimiter = rateLimit({
+  windowMs: 30 * 1000,
+  max: 1,
+  message: {
+    success: false,
+    message: 'Please wait 30 seconds before requesting a new code.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 module.exports = {
   otpLimiter,
+  resendLimiter,
   apiLimiter
 };

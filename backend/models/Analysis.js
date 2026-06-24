@@ -24,6 +24,8 @@ const Analysis = sequelize.define('Analysis', {
     allowNull: false
   }
 }, {
+  tableName: 'analyses',
+  freezeTableName: true,
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: false

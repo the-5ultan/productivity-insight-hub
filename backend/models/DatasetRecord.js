@@ -40,6 +40,8 @@ const DatasetRecord = sequelize.define('DatasetRecord', {
     allowNull: false
   }
 }, {
+  tableName: 'datasetrecords',
+  freezeTableName: true,
   timestamps: false
 });
 

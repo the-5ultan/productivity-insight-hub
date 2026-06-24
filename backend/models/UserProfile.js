@@ -55,6 +55,8 @@ const UserProfile = sequelize.define('UserProfile', {
     defaultValue: 0
   }
 }, {
+  tableName: 'userprofiles',
+  freezeTableName: true,
   timestamps: true,
   indexes: [
     {

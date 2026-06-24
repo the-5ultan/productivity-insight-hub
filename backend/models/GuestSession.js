@@ -24,6 +24,8 @@ const GuestSession = sequelize.define('GuestSession', {
     allowNull: true
   }
 }, {
+  tableName: 'guestsessions',
+  freezeTableName: true,
   timestamps: true
 });
 

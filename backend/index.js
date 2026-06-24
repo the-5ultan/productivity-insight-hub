@@ -78,19 +78,19 @@ app.get('/', (req, res) => {
 // Centralized Error Handling
 app.use(errorHandler);
 
-// Sync Database (safe mode — no auto-alter to prevent duplicate index accumulation)
+// Sync Database — authenticate only, no schema modifications
 const syncDatabase = async () => {
   try {
-    // First pass: create tables if they don't exist (no alter)
-    await sequelize.sync();
-
-    // Second pass: optionally alter if DB_ALTER is explicitly enabled
-    if (process.env.DB_ALTER === 'true') {
-      console.log('⚠ DB_ALTER enabled — running alter (development only)');
-      await sequelize.sync({ alter: true });
+    const connected = await sequelize.testDirectConnection();
+    if (!connected) {
+      console.error('\n✗ Database connection failed. Exiting.');
+      process.exit(1);
     }
 
-    console.log('✓ Database Connected');
+    console.log('\n--- Sequelize Authentication ---');
+    await sequelize.authenticate();
+    console.log('✓ Sequelize authenticated successfully');
+    console.log('\n✓ Database Connected');
     
     // Diagnostic Logs
     if (process.env.JWT_ACCESS_SECRET && process.env.JWT_REFRESH_SECRET) {
@@ -111,7 +111,9 @@ const syncDatabase = async () => {
       console.log('⚠ Google OAuth Credentials Missing');
     }
   } catch (err) {
-    console.error('Error syncing database:', err);
+    console.error('✗ Sequelize authentication failed:', err.message);
+    console.error(err);
+    process.exit(1);
   }
 };
 

@@ -24,6 +24,8 @@ const ActivityLog = sequelize.define('ActivityLog', {
     allowNull: true
   }
 }, {
+  tableName: 'activitylogs',
+  freezeTableName: true,
   timestamps: true
 });
 

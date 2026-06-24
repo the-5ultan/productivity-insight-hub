@@ -24,6 +24,8 @@ const Report = sequelize.define('Report', {
     allowNull: false
   }
 }, {
+  tableName: 'reports',
+  freezeTableName: true,
   timestamps: true,
   createdAt: 'generated_at',
   updatedAt: false

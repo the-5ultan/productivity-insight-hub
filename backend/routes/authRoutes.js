@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/AuthController');
-const { otpLimiter } = require('../middleware/rateLimiter');
+const { otpLimiter, resendLimiter } = require('../middleware/rateLimiter');
 const passport = require('../config/passport');
 const { generateAccessToken, generateRefreshToken } = require('../utils/jwt');
 
@@ -9,6 +9,7 @@ router.post('/register', otpLimiter, authController.register);
 router.post('/verify-otp', authController.verifyOtp);
 router.post('/login', authController.login);
 router.post('/forgot-password', otpLimiter, authController.forgotPassword);
+router.post('/resend-otp', resendLimiter, authController.resendOtp);
 router.post('/reset-password', authController.resetPassword);
 
 // Google OAuth

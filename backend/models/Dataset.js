@@ -20,6 +20,8 @@ const Dataset = sequelize.define('Dataset', {
     allowNull: true // Nullable if data is entered manually
   }
 }, {
+  tableName: 'datasets',
+  freezeTableName: true,
   timestamps: true,
   createdAt: 'upload_date',
   updatedAt: false
