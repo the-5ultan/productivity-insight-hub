@@ -30,6 +30,7 @@ passport.use(new GoogleStrategy({
             name: profile.displayName,
             email: profile.emails[0].value,
             googleId: profile.id,
+            authProvider: 'google',
             avatar_url: profile.photos[0]?.value,
             isEmailVerified: true,
             accountStatus: 'active',

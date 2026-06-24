@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('signup');
   const [showDropdown, setShowDropdown] = useState(false);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -36,6 +37,12 @@ const Navbar = () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('expired') === 'true') {
       setSessionExpired(true);
+      setAuthMode('login');
+      setIsAuthOpen(true);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (params.get('login') === 'required') {
+      setAuthMode('login');
       setIsAuthOpen(true);
       window.history.replaceState({}, document.title, window.location.pathname);
     }
@@ -165,16 +172,16 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center space-x-4">
                 <button 
-                  onClick={() => setIsAuthOpen(true)}
+                  onClick={() => { setAuthMode('login'); setIsAuthOpen(true); }}
                   className="text-[13px] font-semibold tracking-[0.1em] uppercase text-white/50 hover:text-white transition-all duration-300"
                 >
-                  Sign Up
+                  Log In
                 </button>
                 <button 
-                  onClick={() => setIsAuthOpen(true)}
+                  onClick={() => { setAuthMode('signup'); setIsAuthOpen(true); }}
                   className="btn-primary py-2.5 px-8 text-[13px] tracking-wide cursor-pointer"
                 >
-                  Login
+                  Sign Up
                 </button>
               </div>
             )}
@@ -195,7 +202,7 @@ const Navbar = () => {
             )}
             {!isAuthenticated && (
               <button 
-                onClick={() => setIsAuthOpen(true)}
+                onClick={() => { setAuthMode('login'); setIsAuthOpen(true); }}
                 className="btn-primary py-1.5 px-5 text-[12px] tracking-wide cursor-pointer"
               >
                 Login
@@ -291,7 +298,7 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} initialMode={authMode} />
     </>
   );
 };

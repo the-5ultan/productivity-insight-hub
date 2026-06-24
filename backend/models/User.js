@@ -26,6 +26,11 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  authProvider: {
+    type: DataTypes.ENUM('local', 'google'),
+    defaultValue: 'local',
+    allowNull: false
+  },
   avatar_url: {
     type: DataTypes.STRING,
     allowNull: true

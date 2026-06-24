@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -15,6 +15,40 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { API_BASE_URL } from './services/api';
 import SettingsPage from './pages/Settings';
 
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white font-serif">
+        <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center mb-6">
+          <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+  if (!isAuthenticated) {
+    return <Navigate to="/?login=required" replace />;
+  }
+  return children;
+};
+
+const PublicRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white font-serif">
+        <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center mb-6">
+          <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return children;
+};
+
 const AuthSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,10 +60,7 @@ const AuthSuccess = () => {
     const refreshToken = params.get('refreshToken');
 
     if (accessToken && refreshToken) {
-      // Store temporary token for the profile fetch
       localStorage.setItem('token', accessToken);
-      
-      // Fetch user profile to store in AuthContext and localStorage
       fetch(`${API_BASE_URL}/api/user/profile`, {
         headers: { 'Authorization': `Bearer ${accessToken}` }
       })
@@ -71,14 +102,14 @@ const AppContent = () => {
     <div className="relative min-h-screen bg-black">
       <Navbar />
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<ErrorBoundary name="Landing Page"><LandingPage /></ErrorBoundary>} />
-        <Route path="/login" element={<div className="pt-32 text-center text-primary-accent">Login Page (Coming Soon)</div>} />
-        <Route path="/register" element={<div className="pt-32 text-center text-primary-accent">Register Page (Coming Soon)</div>} />
+        <Route path="/" element={<PublicRoute><ErrorBoundary name="Landing Page"><LandingPage /></ErrorBoundary></PublicRoute>} />
         <Route path="/auth-success" element={<AuthSuccess />} />
-        
-        {/* Protected Dashboard Routes */}
-        <Route path="/dashboard" element={<ErrorBoundary name="Dashboard Layout"><DashboardLayout /></ErrorBoundary>}>
+
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <ErrorBoundary name="Dashboard Layout"><DashboardLayout /></ErrorBoundary>
+          </ProtectedRoute>
+        }>
           <Route index element={<ErrorBoundary name="Dashboard"><Dashboard /></ErrorBoundary>} />
           <Route path="datasets" element={<ErrorBoundary name="Datasets"><Datasets /></ErrorBoundary>} />
           <Route path="analysis" element={<ErrorBoundary name="Analysis"><Analysis /></ErrorBoundary>} />
@@ -88,10 +119,21 @@ const AppContent = () => {
           <Route path="settings" element={<ErrorBoundary name="Settings"><SettingsPage /></ErrorBoundary>} />
         </Route>
 
-        {/* Direct Access Routes (Alternative to Sidebar) */}
-        <Route path="/analysis" element={<div className="pt-32 px-10"><ErrorBoundary name="Analysis"><Analysis /></ErrorBoundary></div>} />
-        <Route path="/datasets" element={<div className="pt-32 px-10"><ErrorBoundary name="Datasets"><Datasets /></ErrorBoundary></div>} />
-        <Route path="/settings" element={<div className="pt-32 px-10"><ErrorBoundary name="Settings"><SettingsPage /></ErrorBoundary></div>} />
+        <Route path="/analysis" element={
+          <ProtectedRoute>
+            <div className="pt-32 px-10"><ErrorBoundary name="Analysis"><Analysis /></ErrorBoundary></div>
+          </ProtectedRoute>
+        } />
+        <Route path="/datasets" element={
+          <ProtectedRoute>
+            <div className="pt-32 px-10"><ErrorBoundary name="Datasets"><Datasets /></ErrorBoundary></div>
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <div className="pt-32 px-10"><ErrorBoundary name="Settings"><SettingsPage /></ErrorBoundary></div>
+          </ProtectedRoute>
+        } />
       </Routes>
     </div>
   );

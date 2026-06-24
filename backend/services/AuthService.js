@@ -5,7 +5,11 @@ const { generateAccessToken, generateRefreshToken } = require('../utils/jwt');
 const registerUser = async (name, email, password) => {
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
-    throw new Error('Email already registered');
+    const err = new Error('Email already registered');
+    err.errorCode = 'EMAIL_ALREADY_EXISTS';
+    err.authMethod = existingUser.authProvider;
+    err.statusCode = 409;
+    throw err;
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -13,6 +17,7 @@ const registerUser = async (name, email, password) => {
     name,
     email,
     password: hashedPassword,
+    authProvider: 'local',
     role: 'user',
     accountStatus: 'pending'
   });
