@@ -58,6 +58,8 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signup' }) => {
     setStep(1);
     setError('');
     setSuccess('');
+    setPassword('');
+    setConfirmPassword('');
     setOtp(Array(6).fill(''));
     setEmailError(null);
   };
@@ -464,6 +466,8 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signup' }) => {
               setStep(1);
               setEmailError(null);
               setError('');
+              setPassword('');
+              setConfirmPassword('');
             }}
             className="btn-primary w-full py-3 sm:py-4 text-sm sm:text-[15px] flex items-center justify-center gap-2"
           >
